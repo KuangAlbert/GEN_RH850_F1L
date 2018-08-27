@@ -27,10 +27,18 @@ typedef enum
 	P0,
 	P8,
 	P9,
+	P10,
 	P11,
 	AP,
 	JP
-} PORT;
+} _GroupNumber;
+
+typedef enum
+{
+	ACTIVE,
+	STANDBY,
+	RESET
+} _PORT_TYPE;
 
 typedef struct _c_pinmux_register_bit_Tag
 {
