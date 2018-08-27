@@ -5,7 +5,7 @@
  *   AUTHOR     :  uidp5021                                             *
  ************************************************************************
  * Object		:
- * Module		: Open Excel
+ * Module		: Process Excel
  * Instance		:
  * Description	:
  *-----------------------------------------------------------------------
@@ -17,19 +17,12 @@
  * Version       Date               Name            Changes and comments
  * 1.0           2018/08/27			Lishi           add Init version
 *=========================================================================*/
-#include <stdio.h>
-#include <conio.h>
-#include "libxl.h"
-#include <windows.h>
-#include "ProcessExcel.h"
+#ifndef __PROCESS_EXCEL_
+#define __PROCESS_EXCEL_
 
-int main()
-{
-    
-	ProcessExcel();
-	printf("\nPress any key to exit...");
-	_getch();
+#define R(a) (a-1)
+#define L(b) (b-65)
 
-	return 0;
-}
+extern void ProcessExcel(void);
 
+#endif /* PROCESS_EXCEL */

@@ -17,19 +17,14 @@
  * Version       Date               Name            Changes and comments
  * 1.0           2018/08/27			Lishi           add Init version
 *=========================================================================*/
-#include <stdio.h>
-#include <conio.h>
-#include "libxl.h"
-#include <windows.h>
-#include "ProcessExcel.h"
+#ifndef __CONFIG_
+#define __CONFIG_
 
-int main()
-{
-    
-	ProcessExcel();
-	printf("\nPress any key to exit...");
-	_getch();
+typedef signed char S8;
+typedef unsigned char U8;
+typedef signed short int S16;
+typedef unsigned short int U16;
+typedef unsigned int S32;
+typedef unsigned int U32;
 
-	return 0;
-}
-
+#endif // __CONFIG_

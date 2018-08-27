@@ -5,7 +5,7 @@
  *   AUTHOR     :  uidp5021                                             *
  ************************************************************************
  * Object		:
- * Module		: Open Excel
+ * Module		: Process Excel
  * Instance		:
  * Description	:
  *-----------------------------------------------------------------------
@@ -17,19 +17,61 @@
  * Version       Date               Name            Changes and comments
  * 1.0           2018/08/27			Lishi           add Init version
 *=========================================================================*/
-#include <stdio.h>
-#include <conio.h>
-#include "libxl.h"
-#include <windows.h>
-#include "ProcessExcel.h"
+#ifndef __PINMUX_REGISTER_
+#define __PINMUX_REGISTER_
 
-int main()
+#include "config.h"
+
+typedef enum
 {
-    
-	ProcessExcel();
-	printf("\nPress any key to exit...");
-	_getch();
+	P0,
+	P8,
+	P9,
+	P11,
+	AP,
+	JP
+} PORT;
 
-	return 0;
-}
+typedef struct _c_pinmux_register_bit_Tag
+{
+	U32 bit0 : 1;
+	U32 bit1 : 1;
+	U32 bit2 : 1;
+	U32 bit3 : 1;
+	U32 bit4 : 1;
+	U32 bit5 : 1;
+	U32 bit6 : 1;
+	U32 bit7 : 1;
+	U32 bit8 : 1;
+	U32 bit9 : 1;
+	U32 bit10 : 1;
+	U32 bit11 : 1;
+	U32 bit12 : 1;
+	U32 bit13 : 1;
+	U32 bit14 : 1;
+	U32 bit15 : 1;
+	U32 bit16 : 1;
+	U32 bit17 : 1;
+	U32 bit18 : 1;
+	U32 bit19 : 1;
+	U32 bit20 : 1;
+	U32 bit21 : 1;
+	U32 bit22 : 1;
+	U32 bit23 : 1;
+	U32 bit24 : 1;
+	U32 bit25 : 1;
+	U32 bit26 : 1;
+	U32 bit27 : 1;
+	U32 bit28 : 1;
+	U32 bit29 : 1;
+	U32 bit30 : 1;
+	U32 bit31 : 1;
+} _c_pinmux_register_bit;
 
+typedef union _c_pinmux_register_bit_BufTag
+{
+	U32 register_int;
+	_c_pinmux_register_bit register_bit;
+}_c_pinmux_register_bit_Buf;
+
+#endif // __PINMUX_REGISTER_
