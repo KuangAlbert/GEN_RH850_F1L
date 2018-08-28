@@ -26,11 +26,11 @@
 #define R_STAET_100 R(2)		/* 行开始检索 */
 #define R_END_100	R(301)		/* 行检索结束 */
 
-#define L_STAET_100 L('D')		/* 列开始检索 */
+#define L_STAET_100 L('C')		/* 列开始检索 */
 #define L_END_100	L('P')		/* 列检索结束 */
 
-#define		SET_BIT(x, n)   ( x | ((1U)<<(n)) )
-#define		CLEAR_BIT(x,n)		(x&~(1U<<(n)))
+#define		SET_BIT(x, n)		x=( x | ((1U)<<(n)) )
+#define		CLEAR_BIT(x,n)		x=(x &~(1U<<(n)))
 extern void ProcessExcel(void);
 
 #endif /* PROCESS_EXCEL */
