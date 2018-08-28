@@ -376,9 +376,12 @@ void ProcessExcel(void)
 *  Parameter   :
 *  Returns     : None
 *****************************************************************************/
-U8 SearchAlternativNum(wchar_t* cell)
+U8 SearchAlternativNum(wchar_t* cell, U16 Row)
 {
-	S8 tmp[255];
+	S8 tmp[255] = {0};
+	S8 tmp_num[50] = {0};
+	U8 num = 0xFF;
+
 	if (wcslen(cell) >= 100) printf("请检查字符串的长度\n");
 
 	WideCharToMultiByte(CP_ACP, 0, cell, wcslen(cell) + 1, tmp, 256, NULL, NULL);
@@ -386,5 +389,30 @@ U8 SearchAlternativNum(wchar_t* cell)
 	printf("###########################string len is %d\n",strlen(tmp));
 	write_log(logFile, "[H]	%d！++++++++++++++++++++++\n", strlen(tmp));
 
+	if (0 == wcscmp(cell, L"NONE"))
+	{
+		num = 0xFF;
+	}
+	else
+	{
+		for (i = 0; i < strlen(tmp); i++)
+		{
+			if (tmp[0] == '<' && tmp[1] == 'I' && tmp[2] == 'n')
+			{
+				if (tmp[i + 3] != '>')
+				{
+					tmp_num[i] = tmp[i + 3];
+				}
+				
+			}
+			else
+			{
+				write_log(logFile, "[%3d,H]	error出现错误！\n", Row + 1);
+				break;
+			}
+		}
+
+	}
+	
 }
 
