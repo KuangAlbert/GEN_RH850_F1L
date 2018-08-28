@@ -5,7 +5,7 @@
  *   AUTHOR     :  uidp5021                                             *
  ************************************************************************
  * Object		:
- * Module		: Open Excel
+ * Module		: Process Excel
  * Instance		:
  * Description	:
  *-----------------------------------------------------------------------
@@ -17,24 +17,10 @@
  * Version       Date               Name            Changes and comments
  * 1.0           2018/08/27			Lishi           add Init version
 *=========================================================================*/
-#include <stdio.h>
-#include <conio.h>
-#include "libxl.h"
-#include <windows.h>
-#include "ProcessExcel.h"
-#include "log.h"
+#ifndef __LOG_
+#define __LOG_
 
-int main()
-{
-	logFile = fopen("log.txt", "w"); /* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
+extern FILE* logFile;
+extern int write_log(FILE* pFile, const char *format, ...);
 
-	ProcessExcel();
-
-	fclose(logFile);/* 关闭文件 */
-
-	printf("\nPress any key to exit...");
-	_getch();
-
-	return 0;
-}
-
+#endif /* __LOG_ */

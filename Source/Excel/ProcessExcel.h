@@ -19,7 +19,7 @@
 *=========================================================================*/
 #ifndef __PROCESS_EXCEL_
 #define __PROCESS_EXCEL_
-
+#include "config.h"
 #define R(a) (a-1)
 #define L(b) (b-65)
 
@@ -31,6 +31,7 @@
 
 #define		SET_BIT(x, n)		x=( x | ((1U)<<(n)) )
 #define		CLEAR_BIT(x,n)		x=(x &~(1U<<(n)))
-extern void ProcessExcel(void);
 
+extern void ProcessExcel(void);
+extern U8 SearchAlternativNum(wchar_t* cell);
 #endif /* PROCESS_EXCEL */
