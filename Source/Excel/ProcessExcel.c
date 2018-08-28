@@ -60,6 +60,7 @@ void ProcessExcel(void)
 	_GroupNumber GroupNumber;
 	U8 PortNumber;
 	_PORT_TYPE PORT_TYPE;
+	U8 RegType,AltType;
 
 	const wchar_t * x = L"Halil Kural";
 	const wchar_t * y = L"windows-2723210a07c4e90162b26966a8jcdboe";
@@ -142,6 +143,7 @@ void ProcessExcel(void)
 					if (PortNumber < 0 || PortNumber > 15)
 					{
 						write_log(logFile, "[%3d,D]	error PortNumber错误！\n", Row + 1);
+						continue;
 					}
 
 					/* 第E列 */
@@ -163,6 +165,7 @@ void ProcessExcel(void)
 					else if(NULL != cell && 0 != wcscmp(cell, L"NA"))
 					{
 						write_log(logFile, "[%3d,E]	error出现错误！\n", Row + 1);
+						continue;
 					}
 
 					/* 第G列 */
@@ -180,23 +183,10 @@ void ProcessExcel(void)
 					else
 					{
 						write_log(logFile, "[%3d,G]	error出现错误！\n", Row + 1);
+						continue;
 					}
 
 					printf("line X 0x%08x\n", PMC[PORT_TYPE][GroupNumber]);
-
-					/* 第H列 */
-					
-					cell = xlSheetReadStr(sheet, Row, L('H'), 0);
-					write_log(logFile, "[%3d,H]	%ls\n", Row + 1, cell);
-					if (NULL != cell )
-					{
-						SearchAlternativNum(cell);
-					}
-					else
-					{
-						write_log(logFile, "[%3d,H]	error出现错误！\n", Row + 1);
-					}
-					
 
 					/* 第I列 */
 					cell = xlSheetReadStr(sheet, Row, L('I'), 0);
@@ -204,18 +194,44 @@ void ProcessExcel(void)
 
 					if (NULL != cell && 0 == wcscmp(cell, L"IN"))
 					{
+						RegType = PIN_IN;
 						SET_BIT(PM[PORT_TYPE][GroupNumber], PortNumber);
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"OUT"))
 					{
+						RegType = PIN_OUT;
 						CLEAR_BIT(PM[PORT_TYPE][GroupNumber], PortNumber);
 					}
 					else
 					{
 						write_log(logFile, "[%3d,I]	error出现错误！\n", Row + 1);
+						continue;
 					}
 
 					//printf("line X 0x%08x\n", PM[PORT_TYPE][GroupNumber]);
+
+					/* 第H列 */
+
+					cell = xlSheetReadStr(sheet, Row, L('H'), 0);
+					write_log(logFile, "[%3d,H]	%ls\n", Row + 1, cell);
+					if (NULL != cell)
+					{
+						SearchAlternativNum(cell, Row, &AltType);
+						if (AltType != RegType)
+						{
+							//弹出窗口提示错误，改正
+							wchar_t p[20];
+							wchar_t q[200] = L"请检查Excel表格的第";
+							wsprintf(p, L"%d", Row+1);
+							wcscat(q,p);
+							wcscat(q,L"行，第H列的输入/输出设置是否正确！！！");
+							MessageBox(NULL, q, TEXT("温馨提示：请检查下面的设置！！！"), MB_OK | MB_ICONWARNING);
+						}
+					}
+					else
+					{
+						write_log(logFile, "[%3d,H]	error出现错误！\n", Row + 1);
+					}
 
 					/* 第J列 */
 					cell = xlSheetReadStr(sheet, Row, L('J'), 0);
@@ -376,7 +392,7 @@ void ProcessExcel(void)
 *  Parameter   :
 *  Returns     : None
 *****************************************************************************/
-U8 SearchAlternativNum(wchar_t* cell, U16 Row)
+U8 SearchAlternativNum(wchar_t* cell, U16 Row,U8* type)
 {
 	S8 tmp[255] = {0};
 	S8 tmp_num[50] = {0};
@@ -387,7 +403,7 @@ U8 SearchAlternativNum(wchar_t* cell, U16 Row)
 	WideCharToMultiByte(CP_ACP, 0, cell, wcslen(cell) + 1, tmp, 256, NULL, NULL);
 
 	printf("###########################string len is %d\n",strlen(tmp));
-	write_log(logFile, "[H]	%d！++++++++++++++++++++++\n", strlen(tmp));
+	write_log(logFile, "[H]	%d++++++++++++++++++++++\n", strlen(tmp));
 
 	if (0 == wcscmp(cell, L"NONE"))
 	{
@@ -395,7 +411,7 @@ U8 SearchAlternativNum(wchar_t* cell, U16 Row)
 	}
 	else
 	{
-		for (i = 0; i < strlen(tmp); i++)
+		for (U8 i = 0; i < strlen(tmp); i++)
 		{
 			if (tmp[0] == '<' && tmp[1] == 'I' && tmp[2] == 'n')
 			{
@@ -403,7 +419,22 @@ U8 SearchAlternativNum(wchar_t* cell, U16 Row)
 				{
 					tmp_num[i] = tmp[i + 3];
 				}
-				
+				if(NULL != type)
+				{ 
+					*type = PIN_IN;
+				}	
+			}
+			else if (tmp[0] == '<' && tmp[1] == 'O' && tmp[2] == 'u' && tmp[3] == 't')
+			{
+				if (tmp[i + 4] != '>')
+				{
+					tmp_num[i] = tmp[i + 4];
+				}
+
+				if (NULL != type)
+				{
+					*type = PIN_OUT;
+				}
 			}
 			else
 			{
@@ -412,7 +443,10 @@ U8 SearchAlternativNum(wchar_t* cell, U16 Row)
 			}
 		}
 
+		write_log(logFile, "#########%s\n", tmp_num);
+		return tmp_num;
+
 	}
-	
 }
+
 

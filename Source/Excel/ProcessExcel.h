@@ -29,9 +29,13 @@
 #define L_STAET_100 L('C')		/* 列开始检索 */
 #define L_END_100	L('P')		/* 列检索结束 */
 
+#define PIN_OUT 0
+#define PIN_IN 1
+
 #define		SET_BIT(x, n)		x=( x | ((1U)<<(n)) )
 #define		CLEAR_BIT(x,n)		x=(x &~(1U<<(n)))
 
 extern void ProcessExcel(void);
-extern U8 SearchAlternativNum(wchar_t* cell);
+extern U8 SearchAlternativNum(wchar_t* cell, U16 Row, U8* type);
+
 #endif /* PROCESS_EXCEL */
