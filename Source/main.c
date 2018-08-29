@@ -23,6 +23,7 @@
 #include <windows.h>
 #include "ProcessExcel.h"
 #include "log.h"
+#include "GenPinmux100pin.h"
 
 /* 为了让生成的EXE运行时不显示黑框 */
 #pragma comment( linker, "/subsystem:windows /entry:mainCRTStartup" )
@@ -33,6 +34,7 @@ int main()
 	logFile = fopen("log.txt", "w"); /* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
 
 	ProcessExcel();
+	GenPinmux_100pin();
 
 	fclose(logFile);/* 关闭文件 */
 

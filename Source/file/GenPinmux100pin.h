@@ -5,7 +5,7 @@
  *   AUTHOR     :  uidp5021                                             *
  ************************************************************************
  * Object		:
- * Module		: Process Excel
+ * Module		: 
  * Instance		:
  * Description	:
  *-----------------------------------------------------------------------
@@ -17,42 +17,8 @@
  * Version       Date               Name            Changes and comments
  * 1.0           2018/08/27			Lishi           add Init version
 *=========================================================================*/
-#ifndef __PINMUX_REGISTER_
-#define __PINMUX_REGISTER_
+#ifndef __GEN_PINMUX_100PIN_
+#define __GEN_PINMUX_100PIN_
 
-#include "config.h"
-
-typedef enum
-{
-	P0,
-	P8,
-	P9,
-	P10,
-	P11,
-	AP,
-	JP
-} _GroupNumber;
-
-typedef enum
-{
-	ACTIVE,
-	STANDBY,
-	RESET
-} _PORT_TYPE;
-
-typedef enum
-{
-	DISABLE,
-	ENABLE
-} _SETTING;
-
-typedef enum
-{
-	GPIO,
-	ALT,
-} _GPIO_ALT;
-
-#define YES 1
-#define NO	0
-
-#endif // __PINMUX_REGISTER_
+extern void GenPinmux_100pin(void);
+#endif

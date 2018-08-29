@@ -57,10 +57,9 @@ void ProcessExcel(void)
 {
 	BookHandle book = xlCreateXMLBook();
 	wchar_t* cell;
-	_GroupNumber GroupNumber;
-	U8 PortNumber;
-	_PORT_TYPE PORT_TYPE;
-	U8 RegType,AltType;
+
+	_ExcelResult ExcelResult;
+	_ExcelResult* p = &ExcelResult;
 
 	const wchar_t * x = L"Halil Kural";
 	const wchar_t * y = L"windows-2723210a07c4e90162b26966a8jcdboe";
@@ -78,6 +77,8 @@ void ProcessExcel(void)
 				
 				for (Row = R_STAET_100; Row <= R_END_100; Row++)
 				{
+					memset(p, 0xFF, sizeof(_ExcelResult));
+
 					/* 第F列 */
 					cell = xlSheetReadStr(sheet, Row, L('F'), 0);
 
@@ -86,9 +87,11 @@ void ProcessExcel(void)
 					if (NULL != cell && 0 == wcscmp(cell, L"Yes"))
 					{
 						//printf("line if yes\n");
+						p->whether = YES;
 					}
 					else if(NULL != cell && 0 == wcscmp(cell, L"No"))
 					{
+						p->whether = NO;
 						continue;
 					}
 					else
@@ -104,31 +107,31 @@ void ProcessExcel(void)
 
 					if (NULL != cell && 0 == wcscmp(cell, L"0"))
 					{
-						GroupNumber = P0;
+						p->GroupNumber = P0;
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"8"))
 					{
-						GroupNumber = P8;
+						p->GroupNumber = P8;
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"9"))
 					{
-						GroupNumber = P9;
+						p->GroupNumber = P9;
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"10"))
 					{
-						GroupNumber = P10;
+						p->GroupNumber = P10;
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"11"))
 					{
-						GroupNumber = P11;
+						p->GroupNumber = P11;
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"20"))
 					{
-						GroupNumber = JP;
+						p->GroupNumber = JP;
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"30"))
 					{
-						GroupNumber = AP;
+						p->GroupNumber = AP;
 					}
 					else if (NULL != cell && 0 != wcscmp(cell, L"NA"))
 					{
@@ -137,10 +140,10 @@ void ProcessExcel(void)
 					}
 
 					/* 第D列 */
-					PortNumber = xlSheetReadNum(sheet, Row, L('D'), NULL);
-					write_log(logFile, "[%3d,D]	%d\n", Row + 1, PortNumber);
+					p->PortNumber = xlSheetReadNum(sheet, Row, L('D'), NULL);
+					write_log(logFile, "[%3d,D]	%d\n", Row + 1, ExcelResult.PortNumber);
 
-					if (PortNumber < 0 || PortNumber > 15)
+					if (p->PortNumber < 0 || p->PortNumber > 15)
 					{
 						write_log(logFile, "[%3d,D]	error PortNumber错误！\n", Row + 1);
 						continue;
@@ -152,15 +155,15 @@ void ProcessExcel(void)
 
 					if (NULL != cell && 0 == wcscmp(cell, L"ACTIVE"))
 					{
-						PORT_TYPE = ACTIVE;
+						p->PORT_TYPE = ACTIVE;
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"STANDBY"))
 					{
-						PORT_TYPE = STANDBY;
+						p->PORT_TYPE = STANDBY;
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"RESET"))
 					{
-						PORT_TYPE = RESET;
+						p->PORT_TYPE = RESET;
 					}
 					else if(NULL != cell && 0 != wcscmp(cell, L"NA"))
 					{
@@ -174,11 +177,13 @@ void ProcessExcel(void)
 
 					if (NULL != cell && 0 == wcscmp(cell, L"GPIO"))
 					{
-						SET_BIT(PMC[PORT_TYPE][GroupNumber], PortNumber);
+						p->gpio_alt = GPIO;
+						SET_BIT(PMC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"ALT"))
 					{
-						CLEAR_BIT(PMC[PORT_TYPE][GroupNumber], PortNumber);
+						p->gpio_alt = ALT;
+						CLEAR_BIT(PMC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else
 					{
@@ -186,7 +191,7 @@ void ProcessExcel(void)
 						continue;
 					}
 
-					printf("line X 0x%08x\n", PMC[PORT_TYPE][GroupNumber]);
+					printf("line X 0x%08x\n", PMC[p->PORT_TYPE][p->GroupNumber]);
 
 					/* 第I列 */
 					cell = xlSheetReadStr(sheet, Row, L('I'), 0);
@@ -194,13 +199,13 @@ void ProcessExcel(void)
 
 					if (NULL != cell && 0 == wcscmp(cell, L"IN"))
 					{
-						RegType = PIN_IN;
-						SET_BIT(PM[PORT_TYPE][GroupNumber], PortNumber);
+						p->RegType = PIN_IN;
+						SET_BIT(PM[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"OUT"))
 					{
-						RegType = PIN_OUT;
-						CLEAR_BIT(PM[PORT_TYPE][GroupNumber], PortNumber);
+						p->RegType = PIN_OUT;
+						CLEAR_BIT(PM[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else
 					{
@@ -216,8 +221,8 @@ void ProcessExcel(void)
 					write_log(logFile, "[%3d,H]	%ls\n", Row + 1, cell);
 					if (NULL != cell)
 					{
-						SearchAlternativNum(cell, Row, &AltType);
-						if (AltType != RegType)
+						p->AltNum = SearchAlternativNum(cell, Row, &p->AltType);
+						if (p->AltType != p->RegType && p->AltType == ALT)
 						{
 							//弹出窗口提示错误，改正
 							wchar_t p[20];
@@ -226,6 +231,45 @@ void ProcessExcel(void)
 							wcscat(q,p);
 							wcscat(q,L"行，第H列的输入/输出设置是否正确！！！");
 							MessageBox(NULL, q, TEXT("温馨提示：请检查下面的设置！！！"), MB_OK | MB_ICONWARNING);
+						}
+						else
+						{
+							switch (p->AltNum)
+							{
+								case 0xFF:	/* NONE */
+									CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									break;
+								case 1:	/* 1st */
+									CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									break;
+								case 2:	/* 2nd */
+									SET_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									break;
+								case 3:	/* 3rd */
+									CLEAR_BIT(PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									SET_BIT(PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									CLEAR_BIT(PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									break;
+								case 4:	/* 4th */
+									SET_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									SET_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									break;
+								case 5:	/* 5th */
+									CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									SET_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+									break;
+								default:
+									write_log(logFile, "[%3d,H]	error功能口识别错误！\n", Row + 1);
+									break;	
+							}
 						}
 					}
 					else
@@ -239,11 +283,13 @@ void ProcessExcel(void)
 
 					if (NULL != cell && 0 == wcscmp(cell, L"Enable"))
 					{
-						SET_BIT(PIBC[PORT_TYPE][GroupNumber], PortNumber);
+						p->InputBuffer = ENABLE;
+						SET_BIT( PIBC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"Disable"))
 					{
-						CLEAR_BIT(PIBC[PORT_TYPE][GroupNumber], PortNumber);
+						p->InputBuffer = DISABLE;
+						CLEAR_BIT( PIBC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else
 					{
@@ -258,11 +304,13 @@ void ProcessExcel(void)
 
 					if (NULL != cell && 0 == wcscmp(cell, L"Enable"))
 					{
-						SET_BIT(PU[PORT_TYPE][GroupNumber], PortNumber);
+						p->PullUp = ENABLE;
+						SET_BIT( PU[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"Disable"))
 					{
-						CLEAR_BIT(PU[PORT_TYPE][GroupNumber], PortNumber);
+						p->PullUp = DISABLE;
+						CLEAR_BIT( PU[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else
 					{
@@ -277,11 +325,13 @@ void ProcessExcel(void)
 
 					if (NULL != cell && 0 == wcscmp(cell, L"Enable"))
 					{
-						SET_BIT(PD[PORT_TYPE][GroupNumber], PortNumber);
+						p->PullDown = ENABLE;
+						SET_BIT( PD[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"Disable"))
 					{
-						CLEAR_BIT(PD[PORT_TYPE][GroupNumber], PortNumber);
+						p->PullDown = DISABLE;
+						CLEAR_BIT( PD[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else
 					{
@@ -296,11 +346,13 @@ void ProcessExcel(void)
 
 					if (NULL != cell && 0 == wcscmp(cell, L"Enable"))
 					{
-						SET_BIT(PBDC[PORT_TYPE][GroupNumber], PortNumber);
+						p->bidMode = ENABLE;
+						SET_BIT( PBDC [p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"Disable"))
 					{
-						CLEAR_BIT(PBDC[PORT_TYPE][GroupNumber], PortNumber);
+						p->bidMode = DISABLE;
+						CLEAR_BIT( PBDC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else
 					{
@@ -315,11 +367,13 @@ void ProcessExcel(void)
 
 					if (NULL != cell && 0 == wcscmp(cell, L"Enable"))
 					{
-						SET_BIT(PDSC[PORT_TYPE][GroupNumber], PortNumber);
+						p->DriverStrength = ENABLE;
+						SET_BIT( PDSC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"Disable"))
 					{
-						CLEAR_BIT(PDSC[PORT_TYPE][GroupNumber], PortNumber);
+						p->DriverStrength = DISABLE;
+						CLEAR_BIT( PDSC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else
 					{
@@ -334,11 +388,13 @@ void ProcessExcel(void)
 
 					if (NULL != cell && 0 == wcscmp(cell, L"Enable"))
 					{
-						SET_BIT(PDSC[PORT_TYPE][GroupNumber], PortNumber);
+						p->OutputMode = ENABLE;
+						SET_BIT( PDSC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"Disable"))
 					{
-						CLEAR_BIT(PDSC[PORT_TYPE][GroupNumber], PortNumber);
+						p->OutputMode = DISABLE;
+						CLEAR_BIT( PDSC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else
 					{
@@ -353,11 +409,13 @@ void ProcessExcel(void)
 
 					if (NULL != cell && 0 == wcscmp(cell, L"High_Level"))
 					{
-						SET_BIT(P[PORT_TYPE][GroupNumber], PortNumber);
+						p->PortValue = ENABLE;
+						SET_BIT( P[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"Low-Level"))
 					{
-						CLEAR_BIT(P[PORT_TYPE][GroupNumber], PortNumber);
+						p->PortValue = DISABLE;
+						CLEAR_BIT( P[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else
 					{
@@ -387,7 +445,7 @@ void ProcessExcel(void)
 }
 
 /*****************************************************************************
-*  Name        : ProcessAll_Line
+*  Name        : SearchAlternativNum
 *  Description :
 *  Parameter   :
 *  Returns     : None
@@ -402,8 +460,8 @@ U8 SearchAlternativNum(wchar_t* cell, U16 Row,U8* type)
 
 	WideCharToMultiByte(CP_ACP, 0, cell, wcslen(cell) + 1, tmp, 256, NULL, NULL);
 
-	printf("###########################string len is %d\n",strlen(tmp));
-	write_log(logFile, "[H]	%d++++++++++++++++++++++\n", strlen(tmp));
+	//printf("###########################string len is %d\n",strlen(tmp));
+	//write_log(logFile, "[H]	%d++++++++++++++++++++++\n", strlen(tmp));
 
 	if (0 == wcscmp(cell, L"NONE"))
 	{
@@ -442,11 +500,11 @@ U8 SearchAlternativNum(wchar_t* cell, U16 Row,U8* type)
 				break;
 			}
 		}
-
-		write_log(logFile, "#########%s\n", tmp_num);
-		return tmp_num;
-
+		num = atoi(tmp_num);
 	}
+	write_log(logFile, "[%3d,H]	%dst Alternative！\n",Row + 1, num);
+	return num;
 }
+
 
 

@@ -5,7 +5,7 @@
  *   AUTHOR     :  uidp5021                                             *
  ************************************************************************
  * Object		:
- * Module		: Process Excel
+ * Module		: 生成F1L 100pin的pinmux
  * Instance		:
  * Description	:
  *-----------------------------------------------------------------------
@@ -17,42 +17,28 @@
  * Version       Date               Name            Changes and comments
  * 1.0           2018/08/27			Lishi           add Init version
 *=========================================================================*/
-#ifndef __PINMUX_REGISTER_
-#define __PINMUX_REGISTER_
+#include <stdio.h>
+#include <stdarg.h>
+#include "GenPinmux100pin.h"
 
-#include "config.h"
+FILE* F100;
 
-typedef enum
+
+/*****************************************************************************
+ *  Name        : ProcessExcel
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+void GenPinmux_100pin(void)
 {
-	P0,
-	P8,
-	P9,
-	P10,
-	P11,
-	AP,
-	JP
-} _GroupNumber;
+	char* str= "/***********************************************************************\n
+		*   Copyright(C) Huizhou Desay SV Automotive Co., Ltd.                *\n
+		*   All Rights Reserved.                                               *\n
+		*   Department : RN RD SW1                                             *\n
+		*   AUTHOR : Shao Guangxian                                        *\";
 
-typedef enum
-{
-	ACTIVE,
-	STANDBY,
-	RESET
-} _PORT_TYPE;
-
-typedef enum
-{
-	DISABLE,
-	ENABLE
-} _SETTING;
-
-typedef enum
-{
-	GPIO,
-	ALT,
-} _GPIO_ALT;
-
-#define YES 1
-#define NO	0
-
-#endif // __PINMUX_REGISTER_
+	F100 = fopen("MCU_PIN_CC.H", "w"); /* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
+	fputs(str, F100);
+	fclose(F100);
+}
