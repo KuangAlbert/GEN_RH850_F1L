@@ -24,7 +24,8 @@
 
 FILE* F100;
 
-const U8 PmcString[][255] =
+/* ACTIVE */
+const U8 PmcStringActive[][ROW_BUF_MAX] =
 {
 	"#define GPIO_PMC0_ACTIVE_VAL ",
 	"#define GPIO_PMC8_ACTIVE_VAL ",
@@ -34,7 +35,468 @@ const U8 PmcString[][255] =
 	"#define GPIO_JPMC0_ACTIVE_VAL",
 };
 
+const U8 PmStringActive[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PM0_ACTIVE_VAL ",
+	"#define GPIO_PM8_ACTIVE_VAL ",
+	"#define GPIO_PM9_ACTIVE_VAL ",
+	"#define GPIO_PM10_ACTIVE_VAL",
+	"#define GPIO_PM11_ACTIVE_VAL",
+	"#define GPIO_APM0_ACTIVE_VAL",
+	"#define GPIO_JPM0_ACTIVE_VAL",
+};
 
+const U8 PibcStringActive[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PIBC0_ACTIVE_VAL ",
+	"#define GPIO_PIBC8_ACTIVE_VAL ",
+	"#define GPIO_PIBC9_ACTIVE_VAL ",
+	"#define GPIO_PIBC10_ACTIVE_VAL",
+	"#define GPIO_PIBC11_ACTIVE_VAL",
+	"#define GPIO_APIBC0_ACTIVE_VAL",
+	"#define GPIO_JPIBC0_ACTIVE_VAL",
+};
+
+const U8 PbdcStringActive[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PBDC0_ACTIVE_VAL ",
+	"#define GPIO_PBDC8_ACTIVE_VAL ",
+	"#define GPIO_PBDC9_ACTIVE_VAL ",
+	"#define GPIO_PBDC10_ACTIVE_VAL",
+	"#define GPIO_PBDC11_ACTIVE_VAL",
+	"#define GPIO_APBDC0_ACTIVE_VAL",
+	"#define GPIO_JPBDC0_ACTIVE_VAL",
+};
+
+const U8 PuStringActive[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PU0_ACTIVE_VAL ",
+	"#define GPIO_PU8_ACTIVE_VAL ",
+	"#define GPIO_PU9_ACTIVE_VAL ",
+	"#define GPIO_PU10_ACTIVE_VAL",
+	"#define GPIO_PU11_ACTIVE_VAL",
+	"#define GPIO_APU0_ACTIVE_VAL",
+	"#define GPIO_JPU0_ACTIVE_VAL",
+};
+
+const U8 PdStringActive[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PD0_ACTIVE_VAL ",
+	"#define GPIO_PD8_ACTIVE_VAL ",
+	"#define GPIO_PD9_ACTIVE_VAL ",
+	"#define GPIO_PD10_ACTIVE_VAL",
+	"#define GPIO_PD11_ACTIVE_VAL",
+	"#define GPIO_APD0_ACTIVE_VAL",
+	"#define GPIO_JPD0_ACTIVE_VAL",
+};
+
+const U8 PdscStringActive[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PDSC0_ACTIVE_VAL ",
+	"#define GPIO_PDSC8_ACTIVE_VAL ",
+	"#define GPIO_PDSC9_ACTIVE_VAL ",
+	"#define GPIO_PDSC10_ACTIVE_VAL",
+	"#define GPIO_PDSC11_ACTIVE_VAL",
+};
+
+const U8 PodcStringActive[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PODC0_ACTIVE_VAL ",
+	"#define GPIO_PODC8_ACTIVE_VAL ",
+	"#define GPIO_PODC9_ACTIVE_VAL ",
+	"#define GPIO_PODC10_ACTIVE_VAL",
+	"#define GPIO_PODC11_ACTIVE_VAL",
+	"#define GPIO_APODC0_ACTIVE_VAL",
+	"#define GPIO_JPODC0_ACTIVE_VAL",
+};
+
+const U8 PStringActive[][ROW_BUF_MAX] =
+{
+	"#define GPIO_P0_ACTIVE_VAL ",
+	"#define GPIO_P8_ACTIVE_VAL ",
+	"#define GPIO_P9_ACTIVE_VAL ",
+	"#define GPIO_P10_ACTIVE_VAL",
+	"#define GPIO_P11_ACTIVE_VAL",
+	"#define GPIO_JP0_ACTIVE_VAL",
+	"#define GPIO_AP0_ACTIVE_VAL",
+};
+
+const U8 AlternativeActive[6][3][ROW_BUF_MAX] =
+{
+	{
+		"#define GPIO_PFC0_ACTIVE_VAL  ",
+		"#define GPIO_PFCE0_ACTIVE_VAL ",
+		"#define GPIO_PFCAE0_ACTIVE_VAL",
+	},
+	{
+		"#define GPIO_PFC8_ACTIVE_VAL  ",
+		"#define GPIO_PFCE8_ACTIVE_VAL ",
+		"#define GPIO_PFCAE8_ACTIVE_VAL",
+	},
+	{
+		"#define GPIO_PFC9_ACTIVE_VAL  ",
+		"#define GPIO_PFCE9_ACTIVE_VAL ",
+		"#define GPIO_PFCAE9_ACTIVE_VAL",
+	},
+	{
+		"#define GPIO_PFC10_ACTIVE_VAL  ",
+		"#define GPIO_PFCE10_ACTIVE_VAL ",
+		"#define GPIO_PFCAE10_ACTIVE_VAL",
+	},
+	{
+		"#define GPIO_PFC11_ACTIVE_VAL  ",
+		"#define GPIO_PFCE11_ACTIVE_VAL ",
+		"#define GPIO_PFCAE11_ACTIVE_VAL",
+	},
+	{
+		"#define GPIO_JPFC0_ACTIVE_VAL  ",
+		"#define GPIO_JPFCE0_ACTIVE_VAL ",
+		"#define GPIO_JPFCAE0_ACTIVE_VAL",
+	}
+};
+
+const U8 PipcStringActive[][ROW_BUF_MAX] =
+{
+"                                                                 \n"
+"                                                                 \n"
+"/* Port IP Control: IN alternative mode, mask PM.  1=unuse PM */ \n"
+"/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 1  1  0  0 */      \n"
+"#define GPIO_PIPC0_ACTIVE_VAL                   0x000C           \n"
+"                                                                 \n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 0  0  0  0 */      \n"
+"#define GPIO_PIPC8_ACTIVE_VAL                   0x0000           \n"
+"                                                                 \n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 0  0  0  0 */      \n"
+"#define GPIO_PIPC9_ACTIVE_VAL                   0x0000           \n"
+"                                                                 \n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 0  0  0  0 */      \n"
+"#define GPIO_PIPC10_ACTIVE_VAL                  0x0000           \n"
+"                                                                 \n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 0  0  0  0 */      \n"
+"#define GPIO_PIPC11_ACTIVE_VAL                  0x0000           \n"
+"//no Jtag                                                        \n"
+"//no Anolog                                                      \n"
+"                                                                 \n"
+"                                                                 \n"
+"																  \n"
+};
+
+/* RESET */
+const U8 PmcStringReset[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PMC0_RESET_VAL ",
+	"#define GPIO_PMC8_RESET_VAL ",
+	"#define GPIO_PMC9_RESET_VAL ",
+	"#define GPIO_PMC10_RESET_VAL",
+	"#define GPIO_PMC11_RESET_VAL",
+	"#define GPIO_JPMC0_RESET_VAL",
+};
+
+const U8 PmStringReset[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PM0_RESET_VAL ",
+	"#define GPIO_PM8_RESET_VAL ",
+	"#define GPIO_PM9_RESET_VAL ",
+	"#define GPIO_PM10_RESET_VAL",
+	"#define GPIO_PM11_RESET_VAL",
+	"#define GPIO_APM0_RESET_VAL",
+	"#define GPIO_JPM0_RESET_VAL",
+};
+
+const U8 PibcStringReset[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PIBC0_RESET_VAL ",
+	"#define GPIO_PIBC8_RESET_VAL ",
+	"#define GPIO_PIBC9_RESET_VAL ",
+	"#define GPIO_PIBC10_RESET_VAL",
+	"#define GPIO_PIBC11_RESET_VAL",
+	"#define GPIO_APIBC0_RESET_VAL",
+	"#define GPIO_JPIBC0_RESET_VAL",
+};
+
+const U8 PbdcStringReset[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PBDC0_RESET_VAL ",
+	"#define GPIO_PBDC8_RESET_VAL ",
+	"#define GPIO_PBDC9_RESET_VAL ",
+	"#define GPIO_PBDC10_RESET_VAL",
+	"#define GPIO_PBDC11_RESET_VAL",
+	"#define GPIO_APBDC0_RESET_VAL",
+	"#define GPIO_JPBDC0_RESET_VAL",
+};
+
+const U8 PuStringReset[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PU0_RESET_VAL ",
+	"#define GPIO_PU8_RESET_VAL ",
+	"#define GPIO_PU9_RESET_VAL ",
+	"#define GPIO_PU10_RESET_VAL",
+	"#define GPIO_PU11_RESET_VAL",
+	"#define GPIO_APU0_RESET_VAL",
+	"#define GPIO_JPU0_RESET_VAL",
+};
+
+const U8 PdStringReset[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PD0_RESET_VAL ",
+	"#define GPIO_PD8_RESET_VAL ",
+	"#define GPIO_PD9_RESET_VAL ",
+	"#define GPIO_PD10_RESET_VAL",
+	"#define GPIO_PD11_RESET_VAL",
+	"#define GPIO_APD0_RESET_VAL",
+	"#define GPIO_JPD0_RESET_VAL",
+};
+
+const U8 PdscStringReset[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PDSC0_RESET_VAL ",
+	"#define GPIO_PDSC8_RESET_VAL ",
+	"#define GPIO_PDSC9_RESET_VAL ",
+	"#define GPIO_PDSC10_RESET_VAL",
+	"#define GPIO_PDSC11_RESET_VAL",
+};
+
+const U8 PodcStringReset[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PODC0_RESET_VAL ",
+	"#define GPIO_PODC8_RESET_VAL ",
+	"#define GPIO_PODC9_RESET_VAL ",
+	"#define GPIO_PODC10_RESET_VAL",
+	"#define GPIO_PODC11_RESET_VAL",
+	"#define GPIO_APODC0_RESET_VAL",
+	"#define GPIO_JPODC0_RESET_VAL",
+};
+
+const U8 PStringReset[][ROW_BUF_MAX] =
+{
+	"#define GPIO_P0_RESET_VAL ",
+	"#define GPIO_P8_RESET_VAL ",
+	"#define GPIO_P9_RESET_VAL ",
+	"#define GPIO_P10_RESET_VAL",
+	"#define GPIO_P11_RESET_VAL",
+	"#define GPIO_JP0_RESET_VAL",
+	"#define GPIO_AP0_RESET_VAL",
+};
+
+const U8 AlternativeReset[6][3][ROW_BUF_MAX] =
+{
+	{
+		"#define GPIO_PFC0_RESET_VAL  ",
+		"#define GPIO_PFCE0_RESET_VAL ",
+		"#define GPIO_PFCAE0_RESET_VAL",
+	},
+	{
+		"#define GPIO_PFC8_RESET_VAL  ",
+		"#define GPIO_PFCE8_RESET_VAL ",
+		"#define GPIO_PFCAE8_RESET_VAL",
+	},
+	{
+		"#define GPIO_PFC9_RESET_VAL  ",
+		"#define GPIO_PFCE9_RESET_VAL ",
+		"#define GPIO_PFCAE9_RESET_VAL",
+	},
+	{
+		"#define GPIO_PFC10_RESET_VAL  ",
+		"#define GPIO_PFCE10_RESET_VAL ",
+		"#define GPIO_PFCAE10_RESET_VAL",
+	},
+	{
+		"#define GPIO_PFC11_RESET_VAL  ",
+		"#define GPIO_PFCE11_RESET_VAL ",
+		"#define GPIO_PFCAE11_RESET_VAL",
+	},
+	{
+		"#define GPIO_JPFC0_RESET_VAL  ",
+		"#define GPIO_JPFCE0_RESET_VAL ",
+		"#define GPIO_JPFCAE0_RESET_VAL",
+	}
+};
+
+const U8 PipcStringReset[][ROW_BUF_MAX] =
+{
+"                                                                 \n"
+"                                                                 \n"
+"/* Port IP Control: IN alternative mode, mask PM.  1=unuse PM */ \n"
+"/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 1  1  0  0 */      \n"
+"#define GPIO_PIPC0_RESET_VAL                   0x000C           \n"
+"                                                                 \n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 0  0  0  0 */      \n"
+"#define GPIO_PIPC8_RESET_VAL                   0x0000           \n"
+"                                                                 \n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 0  0  0  0 */      \n"
+"#define GPIO_PIPC9_RESET_VAL                   0x0000           \n"
+"                                                                 \n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 0  0  0  0 */      \n"
+"#define GPIO_PIPC10_RESET_VAL                  0x0000           \n"
+"                                                                 \n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 0  0  0  0 */      \n"
+"#define GPIO_PIPC11_RESET_VAL                  0x0000           \n"
+"//no Jtag                                                        \n"
+"//no Anolog                                                      \n"
+"                                                                 \n"
+"                                                                 \n"
+"																  \n"
+};
+
+/* STANDBY */
+const U8 PmcStringStandby[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PMC0_STANDBY_VAL ",
+	"#define GPIO_PMC8_STANDBY_VAL ",
+	"#define GPIO_PMC9_STANDBY_VAL ",
+	"#define GPIO_PMC10_STANDBY_VAL",
+	"#define GPIO_PMC11_STANDBY_VAL",
+	"#define GPIO_JPMC0_STANDBY_VAL",
+};
+
+const U8 PmStringStandby[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PM0_STANDBY_VAL ",
+	"#define GPIO_PM8_STANDBY_VAL ",
+	"#define GPIO_PM9_STANDBY_VAL ",
+	"#define GPIO_PM10_STANDBY_VAL",
+	"#define GPIO_PM11_STANDBY_VAL",
+	"#define GPIO_APM0_STANDBY_VAL",
+	"#define GPIO_JPM0_STANDBY_VAL",
+};
+
+const U8 PibcStringStandby[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PIBC0_STANDBY_VAL ",
+	"#define GPIO_PIBC8_STANDBY_VAL ",
+	"#define GPIO_PIBC9_STANDBY_VAL ",
+	"#define GPIO_PIBC10_STANDBY_VAL",
+	"#define GPIO_PIBC11_STANDBY_VAL",
+	"#define GPIO_APIBC0_STANDBY_VAL",
+	"#define GPIO_JPIBC0_STANDBY_VAL",
+};
+
+const U8 PbdcStringStandby[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PBDC0_STANDBY_VAL ",
+	"#define GPIO_PBDC8_STANDBY_VAL ",
+	"#define GPIO_PBDC9_STANDBY_VAL ",
+	"#define GPIO_PBDC10_STANDBY_VAL",
+	"#define GPIO_PBDC11_STANDBY_VAL",
+	"#define GPIO_APBDC0_STANDBY_VAL",
+	"#define GPIO_JPBDC0_STANDBY_VAL",
+};
+
+const U8 PuStringStandby[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PU0_STANDBY_VAL ",
+	"#define GPIO_PU8_STANDBY_VAL ",
+	"#define GPIO_PU9_STANDBY_VAL ",
+	"#define GPIO_PU10_STANDBY_VAL",
+	"#define GPIO_PU11_STANDBY_VAL",
+	"#define GPIO_APU0_STANDBY_VAL",
+	"#define GPIO_JPU0_STANDBY_VAL",
+};
+
+const U8 PdStringStandby[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PD0_STANDBY_VAL ",
+	"#define GPIO_PD8_STANDBY_VAL ",
+	"#define GPIO_PD9_STANDBY_VAL ",
+	"#define GPIO_PD10_STANDBY_VAL",
+	"#define GPIO_PD11_STANDBY_VAL",
+	"#define GPIO_APD0_STANDBY_VAL",
+	"#define GPIO_JPD0_STANDBY_VAL",
+};
+
+const U8 PdscStringStandby[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PDSC0_STANDBY_VAL ",
+	"#define GPIO_PDSC8_STANDBY_VAL ",
+	"#define GPIO_PDSC9_STANDBY_VAL ",
+	"#define GPIO_PDSC10_STANDBY_VAL",
+	"#define GPIO_PDSC11_STANDBY_VAL",
+};
+
+const U8 PodcStringStandby[][ROW_BUF_MAX] =
+{
+	"#define GPIO_PODC0_STANDBY_VAL ",
+	"#define GPIO_PODC8_STANDBY_VAL ",
+	"#define GPIO_PODC9_STANDBY_VAL ",
+	"#define GPIO_PODC10_STANDBY_VAL",
+	"#define GPIO_PODC11_STANDBY_VAL",
+	"#define GPIO_APODC0_STANDBY_VAL",
+	"#define GPIO_JPODC0_STANDBY_VAL",
+};
+
+const U8 PStringStandby[][ROW_BUF_MAX] =
+{
+	"#define GPIO_P0_STANDBY_VAL ",
+	"#define GPIO_P8_STANDBY_VAL ",
+	"#define GPIO_P9_STANDBY_VAL ",
+	"#define GPIO_P10_STANDBY_VAL",
+	"#define GPIO_P11_STANDBY_VAL",
+	"#define GPIO_JP0_STANDBY_VAL",
+	"#define GPIO_AP0_STANDBY_VAL",
+};
+
+const U8 AlternativeStandby[6][3][ROW_BUF_MAX] =
+{
+	{
+		"#define GPIO_PFC0_STANDBY_VAL  ",
+		"#define GPIO_PFCE0_STANDBY_VAL ",
+		"#define GPIO_PFCAE0_STANDBY_VAL",
+	},
+	{
+		"#define GPIO_PFC8_STANDBY_VAL  ",
+		"#define GPIO_PFCE8_STANDBY_VAL ",
+		"#define GPIO_PFCAE8_STANDBY_VAL",
+	},
+	{
+		"#define GPIO_PFC9_STANDBY_VAL  ",
+		"#define GPIO_PFCE9_STANDBY_VAL ",
+		"#define GPIO_PFCAE9_STANDBY_VAL",
+	},
+	{
+		"#define GPIO_PFC10_STANDBY_VAL  ",
+		"#define GPIO_PFCE10_STANDBY_VAL ",
+		"#define GPIO_PFCAE10_STANDBY_VAL",
+	},
+	{
+		"#define GPIO_PFC11_STANDBY_VAL  ",
+		"#define GPIO_PFCE11_STANDBY_VAL ",
+		"#define GPIO_PFCAE11_STANDBY_VAL",
+	},
+	{
+		"#define GPIO_JPFC0_STANDBY_VAL  ",
+		"#define GPIO_JPFCE0_STANDBY_VAL ",
+		"#define GPIO_JPFCAE0_STANDBY_VAL",
+	}
+};
+
+const U8 PipcStringStandby[][ROW_BUF_MAX] =
+{
+"                                                                 \n"
+"                                                                 \n"
+"/* Port IP Control: IN alternative mode, mask PM.  1=unuse PM */ \n"
+"/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 1  1  0  0 */      \n"
+"#define GPIO_PIPC0_STANDBY_VAL                   0x000C           \n"
+"                                                                 \n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 0  0  0  0 */      \n"
+"#define GPIO_PIPC8_STANDBY_VAL                   0x0000           \n"
+"                                                                 \n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 0  0  0  0 */      \n"
+"#define GPIO_PIPC9_STANDBY_VAL                   0x0000           \n"
+"                                                                 \n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 0  0  0  0 */      \n"
+"#define GPIO_PIPC10_STANDBY_VAL                  0x0000           \n"
+"                                                                 \n"
+"/* 0  0  0  0  || 0  0  0  0 || 0  0  0  0 || 0  0  0  0 */      \n"
+"#define GPIO_PIPC11_STANDBY_VAL                  0x0000           \n"
+"//no Jtag                                                        \n"
+"//no Anolog                                                      \n"
+"                                                                 \n"
+"                                                                 \n"
+"																  \n"
+};
 /*****************************************************************************
  *  Name        : GenPinmux_100pin
  *  Description :
@@ -107,20 +569,77 @@ char* str = {
 "#define MCU_JPORT_NUM     1                                             \n"
 "\n"
 "\n"
+"/*----------------------- GPIO ACTIVE ---------------------------- */\n"
+"\n"
 "/* PMC: 0=port mode 1=alternative */\n"
 "/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n"
 };
 
 
 	F100 = fopen("MCU_PIN_CC.H", "w"); /* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
+	
+	/* 设置前面的标题 */
 	fputs(str, F100);
 
-	_PinmuxString pobj;
-	pobj.num = 6;
-	pobj.MacroString = PmcString;
-	OutPutGroupPinmuxString(&pobj, &PMC[ACTIVE][0]);
+	_MacroStr MacroStrActive[] = 
+	{
+		PmcStringActive,
+		PmStringActive,
+		PibcStringActive,
+		PbdcStringActive,
+		PuStringActive,
+		PdStringActive,
+		PdscStringActive,
+		PodcStringActive,
+		PStringActive,
+		AlternativeActive,
+		PipcStringActive,
+	};
 
-	fputs("#define GPIO_PMC0_ACTIVE_VAL", F100);
+	OutputModeString(MacroStrActive, ACTIVE);
+
+	fputs("/*----------------------- GPIO STANDBY ---------------------------- */\n", F100);
+
+	_MacroStr MacroStrStandby[] =
+	{
+		PmcStringStandby,
+		PmStringStandby,
+		PibcStringStandby,
+		PbdcStringStandby,
+		PuStringStandby,
+		PdStringStandby,
+		PdscStringStandby,
+		PodcStringStandby,
+		PStringStandby,
+		AlternativeStandby,
+		PipcStringStandby,
+	};
+
+	OutputModeString(MacroStrStandby, STANDBY);
+
+	fputs("/*----------------------- GPIO RESET ---------------------------- */\n", F100);
+	_MacroStr MacroStrReset[] =
+	{
+		PmcStringReset,
+		PmStringReset,
+		PibcStringReset,
+		PbdcStringReset,
+		PuStringReset,
+		PdStringReset,
+		PdscStringReset,
+		PodcStringReset,
+		PStringReset,
+		AlternativeReset,
+		PipcStringReset,
+	};
+
+	OutputModeString(MacroStrReset, RESET);
+
+	fputs("#endif\n", F100);
+	fputs("#endif /*_PIN_MAP_CC_H*/\n", F100);
+	fputs("/**************** END OF FILE *****************************************/\n", F100);
+
+
 	fclose(F100);
 }
 
@@ -188,11 +707,13 @@ int StringToBinary(int n, char* pszb)
 }
 /*****************************************************************************
  *  Name        : OutPutGroupPinmuxString
- *  Description :
- *  Parameter   :
+ *  Description : 
+ *  Parameter   : _PinmuxString *s:要显示的宏定义和组数
+				  U16* reg：要转换的寄存器的值
+				  jump：要跳过的组，只能是一组，为JP和AP设置的
  *  Returns     : None
 *****************************************************************************/
-void OutPutGroupPinmuxString(_PinmuxString *s, U16* reg)
+void OutPutGroupPinmuxString(_PinmuxString *s, U16* reg, U8 jump)
 {
 	U8 temp[500];
 	U8 s_Hex[30];
@@ -208,6 +729,11 @@ void OutPutGroupPinmuxString(_PinmuxString *s, U16* reg)
 
 	for(U8 i = 0; i< s->num; i++)
 	{
+		if (jump != 0 && i == jump)
+		{
+			continue;
+		}
+
 		strcpy(temp,s->MacroString[i]);
 		strncat(temp, tab, 5);/* 加入3个tab */
 		sprintf(s_Hex, "0x%04X", reg[i]);
@@ -221,4 +747,160 @@ void OutPutGroupPinmuxString(_PinmuxString *s, U16* reg)
 		fputs(s_Bin, F100);
 		fputs(temp, F100);
 	}
+}
+
+/*****************************************************************************
+ *  Name        : OutPutAlternative
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+void OutPutAlternativeString(_AlternativeString *s, U16* RegPfc, U16* RegPfce, U16* RegPfcae)
+{
+	U8 TempPfc[500];
+	U8 TempPfce[500];
+	U8 TempPfcae[500];
+
+	U8 HexPfc[30];
+	U8 HexPfce[30];
+	U8 HexPfcae[30];
+
+	U8 BinPfc[300];
+	U8 BinPfce[300];
+	U8 BinPfcae[300];
+
+	/* Tab字符串 */
+	U8 tab[10] =
+	{
+		"										"
+	};
+
+	printf("%s\n",s->MacroString[0][0]);
+
+	for (U8 i = 0; i < s->num; i++) /* 组别 */
+	{
+
+		strcpy(TempPfc, s->MacroString[i][0]);
+		strcpy(TempPfce, s->MacroString[i][1]);
+		strcpy(TempPfcae, s->MacroString[i][2]);
+
+		strncat(TempPfc, tab, 5);/* 加入3个tab */
+		strncat(TempPfce, tab, 5);/* 加入3个tab */
+		strncat(TempPfcae, tab, 5);/* 加入3个tab */
+
+		sprintf(HexPfc, "0x%04X", RegPfc[i]);
+		sprintf(HexPfce, "0x%04X", RegPfce[i]);
+		sprintf(HexPfcae, "0x%04X", RegPfcae[i]);
+
+		strcat(TempPfc, HexPfc);
+		strcat(TempPfce, HexPfce);
+		strcat(TempPfcae, HexPfcae);
+
+		strcat(TempPfc, " \n");
+		strcat(TempPfce, " \n");
+		strcat(TempPfcae, " \n");
+
+		/* 增加注释 */
+		StringToBinary(RegPfc[i], BinPfc);	/* 字符串转二进制 */
+		StringToBinary(RegPfce[i], BinPfce);	/* 字符串转二进制 */
+		StringToBinary(RegPfcae[i], BinPfcae);	/* 字符串转二进制 */
+
+		
+		fputs("/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2	1  0 */\n", F100);
+		fputs(BinPfc, F100);
+		fputs(BinPfce, F100);
+		fputs(BinPfcae, F100);
+		fputs(TempPfc, F100);
+		fputs(TempPfce, F100);
+		fputs(TempPfcae, F100);
+		fputs("\n", F100);
+	}
+
+}
+
+void OutputModeString(_MacroStr* MacroStr, U8 mode)
+{
+	_PinmuxString pobj;
+
+	/* 设置GPIO/功能口 */
+	pobj.num = 6;
+	pobj.MacroString = MacroStr[M_PMC];
+	OutPutGroupPinmuxString(&pobj, &PMC[mode][0], 0);
+
+	/* 设置PIP */
+	fputs(MacroStr[M_PIPC], F100);
+
+	/* 设置输入/输出 */
+	fputs("/* PM: 0=output 1=input */\n", F100);
+	fputs("/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n", F100);
+
+	pobj.num = 7;
+	pobj.MacroString = MacroStr[M_PM];
+	OutPutGroupPinmuxString(&pobj, &PM[mode][0], 0);
+
+	/* 设置是否使用输入buffer */
+	fputs("\n\n/* Port InputBuffer Control: 0: unused 1: used */\n", F100);
+	fputs("/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n", F100);
+
+	pobj.num = 7;
+	pobj.MacroString = MacroStr[M_PIBC];
+	OutPutGroupPinmuxString(&pobj, &PIBC[mode][0], 0);
+
+	/* 功能口设置 */
+	fputs("\n\n/* PFCAE,PFCE,PFC:IN alternative mode, select a alternative function in 0~4.\n", F100);
+	fputs("*  binary value [PFCAEn_m,PFCEn_m,PFCn_m]b  from 0~4  is a alternative function.\n", F100);
+	fputs("*  <RH850.pdf> page 122 */\n", F100);
+	pobj.num = 6;
+	pobj.MacroString = MacroStr[M_ALT];
+	OutPutAlternativeString(&pobj, &PFC[mode][0], &PFCE[mode][0], &PFCAE[mode][0]);
+
+	/* Port Bidirection Control */
+	fputs("/* Port Bidirection Control: 1= Bidirection */\n", F100);
+	fputs("/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n", F100);
+
+	pobj.num = 7;
+	pobj.MacroString = MacroStr[M_PBDC];
+	OutPutGroupPinmuxString(&pobj, &PBDC[mode][0], 0);
+
+	/* 上拉设置 */
+	fputs("\n\n/* PullUp Control: input mode.  1= internal pullup.\n", F100);
+	fputs("* Care that PUn.PUn_m=1 and PDn.PDn_m=1, then the real Pin is pulldown\n*/\n", F100);
+	fputs("/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n", F100);
+
+	pobj.num = 7;
+	pobj.MacroString = MacroStr[M_PU];
+	OutPutGroupPinmuxString(&pobj, &PU[mode][0], AP);
+
+	/* 下拉设置 */
+	fputs("\n\n/* PullDown Control: input mode.  1= internal pulldown */\n", F100);
+	fputs("/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n", F100);
+
+	pobj.num = 7;
+	pobj.MacroString = MacroStr[M_PD];
+	OutPutGroupPinmuxString(&pobj, &PD[mode][0], AP);
+
+	/* 驱动能力选择 */
+	fputs("\n\n/* Port Driver Strength: output mode. 0:<=10mhz, 1:<=40mhz\n", F100);
+	fputs("* 40MHZ pin select:P0_2,3,5,6,7,13,14  ; P10_ALL ;P11_0~7 \n*/\n", F100);
+	fputs("/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n", F100);
+
+	pobj.num = 5;
+	pobj.MacroString = MacroStr[M_PDSC];
+	OutPutGroupPinmuxString(&pobj, &PDSC[mode][0], 0);
+
+	/* 推挽/开漏选择 */
+	fputs("\n\n/* Port open drain control: output mode. 0:push-pull, 1:open-drain*/\n", F100);
+	fputs("/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n", F100);
+
+	pobj.num = 7;
+	pobj.MacroString = MacroStr[M_PODC];
+	OutPutGroupPinmuxString(&pobj, &PODC[mode][0], AP);
+
+	/* 默认IO电平设置 */
+	fputs("\n\n/* Set default for output pin */\n", F100);
+	fputs("/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n", F100);
+
+	pobj.num = 7;
+	pobj.MacroString = MacroStr[M_P];
+	OutPutGroupPinmuxString(&pobj, &P[mode][0], 0);
 }

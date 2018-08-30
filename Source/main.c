@@ -26,12 +26,12 @@
 #include "GenPinmux100pin.h"
 
 /* 为了让生成的EXE运行时不显示黑框 */
-//#pragma comment( linker, "/subsystem:windows /entry:mainCRTStartup" )
+#pragma comment( linker, "/subsystem:windows /entry:mainCRTStartup" )
 
 wchar_t* ccc = L"wodvfbfb";
 int main()
 {
-	logFile = fopen("log.txt", "w"); /* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
+	logFile = fopen("Excel.log", "w"); /* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
 
 	ProcessExcel();
 	GenPinmux_100pin();
@@ -40,8 +40,8 @@ int main()
 
 	
 
-	printf("\nPress any key to exit...");
-	_getch();
+	//printf("\nPress any key to exit...");
+	//_getch();
 
 	return 0;
 }
