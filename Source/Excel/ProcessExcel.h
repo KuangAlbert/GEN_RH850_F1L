@@ -37,6 +37,8 @@
 #define		SET_BIT(x, n)		x=( x | ((1U)<<(n)) )
 #define		CLEAR_BIT(x,n)		x=(x &~(1U<<(n)))
 
+
+
 typedef struct __ExcelResult
 {
 	U8 mode;		/* Òý½ÅÄ£Ê½£¬ACTIVE,STANDBY,RESET */
@@ -58,6 +60,26 @@ typedef struct __ExcelResult
 	U8 AltType;
 	U8 AltNum;
 }_ExcelResult;
+
+#define PORT_NUM 7
+#define MODE_NUM 3
+
+extern U16 PMC[MODE_NUM][PORT_NUM];		/* port mode */
+extern U16 PIPC[MODE_NUM][PORT_NUM];		/* Port IP Control */
+extern U16 PM[MODE_NUM][PORT_NUM];			/* output/Iinput */
+extern U16 PIBC[MODE_NUM][PORT_NUM];		/* Port InputBuffer Control */
+
+
+extern U16 PFC[MODE_NUM][PORT_NUM];		/* alternative mode */
+extern U16 PFCE[MODE_NUM][PORT_NUM];
+extern U16 PFCAE[MODE_NUM][PORT_NUM];
+
+extern U16 PBDC[MODE_NUM][PORT_NUM];		/* Port Bidirection Control */
+extern U16 PU[MODE_NUM][PORT_NUM];			/* PullUp Control */
+extern U16 PD[MODE_NUM][PORT_NUM];			/* PullDown Control */
+extern U16 PDSC[MODE_NUM][PORT_NUM];		/* Port Driver Strength */
+extern U16 PODC[MODE_NUM][PORT_NUM];		/* output mode */
+extern U16 P[MODE_NUM][PORT_NUM];			/* Port Value */
 
 extern void ProcessExcel(void);
 extern U8 SearchAlternativNum(wchar_t* cell, U16 Row, U8* type);

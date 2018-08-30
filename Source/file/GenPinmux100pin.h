@@ -31,6 +31,7 @@ typedef struct __PinmuxString
 
 }_PinmuxString;
 
+
 extern void GenPinmux_100pin(void);
-extern void OutPutGroupPinmuxString(_PinmuxString *s, U16 reg);
+extern void OutPutGroupPinmuxString(_PinmuxString *s, U16* reg);
 #endif

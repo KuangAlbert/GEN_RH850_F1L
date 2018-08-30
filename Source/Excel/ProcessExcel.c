@@ -27,24 +27,23 @@
 #include "config.h"
 #include "log.h"
 
-#define PORT_NUM 7
-#define MODE_NUM 3
-U32 PMC[MODE_NUM][PORT_NUM];		/* port mode */
-U32 PIPC[MODE_NUM][PORT_NUM];		/* Port IP Control */
-U32 PM[MODE_NUM][PORT_NUM];		/* output/Iinput */
-U32 PIBC[MODE_NUM][PORT_NUM];		/* Port InputBuffer Control */
+
+U16 PMC[MODE_NUM][PORT_NUM];		/* port mode */
+U16 PIPC[MODE_NUM][PORT_NUM];		/* Port IP Control */
+U16 PM[MODE_NUM][PORT_NUM];			/* output/Iinput */
+U16 PIBC[MODE_NUM][PORT_NUM];		/* Port InputBuffer Control */
 
 
-U32 PFC[MODE_NUM][PORT_NUM];		/* alternative mode */
-U32 PFCE[MODE_NUM][PORT_NUM];
-U32 PFCAE[MODE_NUM][PORT_NUM];
+U16 PFC[MODE_NUM][PORT_NUM];		/* alternative mode */
+U16 PFCE[MODE_NUM][PORT_NUM];
+U16 PFCAE[MODE_NUM][PORT_NUM];
 
-U32 PBDC[MODE_NUM][PORT_NUM];		/* Port Bidirection Control */
-U32 PU[MODE_NUM][PORT_NUM];		/* PullUp Control */
-U32 PD[MODE_NUM][PORT_NUM];		/* PullDown Control */
-U32 PDSC[MODE_NUM][PORT_NUM];		/* Port Driver Strength */
-U32 PODC[MODE_NUM][PORT_NUM];		/* output mode */
-U32 P[MODE_NUM][PORT_NUM];			/* Port Value */
+U16 PBDC[MODE_NUM][PORT_NUM];		/* Port Bidirection Control */
+U16 PU[MODE_NUM][PORT_NUM];			/* PullUp Control */
+U16 PD[MODE_NUM][PORT_NUM];			/* PullDown Control */
+U16 PDSC[MODE_NUM][PORT_NUM];		/* Port Driver Strength */
+U16 PODC[MODE_NUM][PORT_NUM];		/* output mode */
+U16 P[MODE_NUM][PORT_NUM];			/* Port Value */
 
 
 /*****************************************************************************
@@ -178,12 +177,12 @@ void ProcessExcel(void)
 					if (NULL != cell && 0 == wcscmp(cell, L"GPIO"))
 					{
 						p->gpio_alt = GPIO;
-						SET_BIT(PMC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+						CLEAR_BIT(PMC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else if (NULL != cell && 0 == wcscmp(cell, L"ALT"))
 					{
 						p->gpio_alt = ALT;
-						CLEAR_BIT(PMC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+						SET_BIT(PMC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 					}
 					else
 					{

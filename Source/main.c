@@ -33,7 +33,7 @@ int main()
 {
 	logFile = fopen("log.txt", "w"); /* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
 
-	//ProcessExcel();
+	ProcessExcel();
 	GenPinmux_100pin();
 
 	fclose(logFile);/* 关闭文件 */

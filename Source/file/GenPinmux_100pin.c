@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "GenPinmux100pin.h"
-
+#include "ProcessExcel.h"
 
 FILE* F100;
 
@@ -108,6 +108,7 @@ char* str = {
 "\n"
 "\n"
 "/* PMC: 0=port mode 1=alternative */\n"
+"/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n"
 };
 
 
@@ -117,14 +118,24 @@ char* str = {
 	_PinmuxString pobj;
 	pobj.num = 6;
 	pobj.MacroString = PmcString;
-	OutPutGroupPinmuxString(&pobj,0x23);
+	OutPutGroupPinmuxString(&pobj, &PMC[ACTIVE][0]);
 
 	fputs("#define GPIO_PMC0_ACTIVE_VAL", F100);
 	fclose(F100);
 }
-int binary(int n, char* pszb)
+
+/*****************************************************************************
+ *  Name        : OutPutGroupPinmuxString
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+int StringToBinary(int n, char* pszb)
 {
-	int a = 1, i;
+	int a = 1, i,j=0;
+	U8 cnt = 1;
+	U8 tmp[20];
+
 	for (i = 15; i >= 0; i--)
 	{
 		if (n&a)
@@ -133,7 +144,46 @@ int binary(int n, char* pszb)
 			pszb[i] = '0';
 		a <<= 1;
 	}
-	pszb[16] = '\0';
+
+	memcpy(tmp, pszb,16);
+	
+	pszb[j++] = '/';
+	pszb[j++] = '*';
+	pszb[j++] = ' ';
+	for (i = 0; i <= 15; i++)
+	{
+		pszb[j++] = tmp[i];
+
+		if (i == 0 || i == 1 || i == 2 || \
+			i == 4 || i == 5 || i == 6 || \
+			i == 8 || i == 9 || i == 10 || \
+			i == 12 || i == 13 || i == 14)
+		{
+			pszb[j++] = ' ';
+			pszb[j++] = ' ';
+		}
+		else if(i == 3)
+		{
+			pszb[j++] = ' ';
+			pszb[j++] = ' ';
+			pszb[j++] = '|';
+			pszb[j++] = '|';
+			pszb[j++] = ' ';
+		}
+		else if (i == 7 || i== 11)
+		{
+			pszb[j++] = ' ';
+			pszb[j++] = '|';
+			pszb[j++] = '|';
+			pszb[j++] = ' ';
+		}
+		
+	}
+	pszb[j++] = ' ';
+	pszb[j++] = '*';
+	pszb[j++] = '/';
+	pszb[j++] = '\n';
+	pszb[j++] = '\0';
 	return 0;
 }
 /*****************************************************************************
@@ -142,11 +192,12 @@ int binary(int n, char* pszb)
  *  Parameter   :
  *  Returns     : None
 *****************************************************************************/
-void OutPutGroupPinmuxString(_PinmuxString *s, U16 reg)
+void OutPutGroupPinmuxString(_PinmuxString *s, U16* reg)
 {
 	U8 temp[500];
 	U8 s_Hex[30];
-	U8 s_Bin[30];
+	U8 s_Bin[300];
+
 	/* Tab字符串 */
 	U8 tab[10] = 
 	{
@@ -154,19 +205,20 @@ void OutPutGroupPinmuxString(_PinmuxString *s, U16 reg)
 	};
 
 	//printf("%s\n",s->MacroString[0]);
-	printf("%x\n", reg);
 
 	for(U8 i = 0; i< s->num; i++)
 	{
 		strcpy(temp,s->MacroString[i]);
-		strncat(temp, tab, 3);/* 加入3个tab */
-		sprintf(s_Hex, "0x%08X", reg);
+		strncat(temp, tab, 5);/* 加入3个tab */
+		sprintf(s_Hex, "0x%04X", reg[i]);
 		strcat(temp, s_Hex);
-		strncat(temp, tab, 1);/* 加入1个tab */
-		binary(reg, s_Bin);
-		strcat(temp, "\n");
-
+		strcat(temp, " */\n\n");
 		printf("%s\n", s_Bin);
+
+		/* 增加注释 */
+		StringToBinary(reg[i], s_Bin);	/* 字符串转二进制 */
+
+		fputs(s_Bin, F100);
 		fputs(temp, F100);
 	}
 }
