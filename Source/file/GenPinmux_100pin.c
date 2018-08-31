@@ -157,6 +157,7 @@ const U8 AlternativeActive[6][3][ROW_BUF_MAX] =
 
 const U8 PipcStringActive[][ROW_BUF_MAX] =
 {
+"#define GPIO_REG_NONE_VAL						0x0000u  /* none register */\n"
 "                                                                 \n"
 "                                                                 \n"
 "/* Port IP Control: IN alternative mode, mask PM.  1=unuse PM */ \n"
@@ -505,81 +506,81 @@ const U8 PipcStringStandby[][ROW_BUF_MAX] =
 *****************************************************************************/
 void GenPinmux_100pin(void)
 {
-char* str = { 
-"/***********************************************************************\n"
-"*   Copyright (C) Huizhou Desay SV Automotive Co., Ltd.                *\n"
-"*                All Rights Reserved.                                  *\n"
-"*   Department  : ITTI                                                 *\n"
-"*   AUTHOR      : uidp5021                                             *\n"
-"************************************************************************\n"
-"* Object        :                                                       \n"
-"* Module        :                                                       \n"
-"* Instance      :                                                       \n"
-"* Description   :                                                       \n"
-"*-----------------------------------------------------------------------\n"
-"* Version:                                                              \n"
-"* Date:                                                                 \n"
-"* Author:                                                               \n"
-"***********************************************************************/\n"
-"/*-History--------------------------------------------------------------\n"
-"* Version       Date    Name    Changes and comment__DSB__DSBs          \n"
-"------------------------------------------------------------------------\n"
-"* 0.1	   Jun 26,2016   PEI Jingli  Initial version                     \n"
-"------------------------------------------------------------------------\n"
-"* 0.2	   Jun 29,2016   LIU Chenxi  Correct errors during merging		 \n"
-"------------------------------------------------------------------------\n"
-"* 0.3	   July 07,2016  PEI Jingli  Adapt xxpin MCU                     \n"
-"------------------------------------------------------------------------\n"
-"* 0.4	   Oct 24,2016  PEI Jingli   Config reset parameters,            \n"
-"                                p0_6 as general io when active and reset\n"
-"------------------------------------------------------------------------\n"
-"* 0.5     Nov 10,2016  PEI Jingli    Set standby paramters              \n"
-"------------------------------------------------------------------------\n"
-"* 0.6     Nov 17,2016  PEI Jingli    Add Pn register for default setting\n"
-"*=====================================================================*/\n"
-"#ifndef _PIN_MAP_CC_H                                                   \n"
-"#define _PIN_MAP_CC_H                                                   \n"
-"#include \"CONFIG.H\"                                                     \n"
-"#include \"SystemMode_Cfg.h\"                                             \n"
-"                                                                        \n"
-"                                                                        \n"
-"/*--------------------configration method----------------------         \n"
-"* 1. independent IO                                                     \n"
-"    PMCn:bit=0 -> PMn                                                   \n"
-"                         1:input  -> PIBCn=1,PUn,PDn                    \n"
-"                                                                        \n"
-"                         0:output->PBDCn,PDSCn,PODCn                    \n"
-"*2. alternative mode                                                    \n"
-"   PMCn:bit=1 ->PIPCn                                                   \n"
-"                         0   -> PFCn,PFCEn,PFCAEn                       \n"
-"                              ->PMn                                     \n"
-"                                  1: input   -> same as 1.              \n"
-"                                  0:output-> same as 1.                 \n"
-"                                                                        \n"
-"                         1  ->PFCn,PFCEn,PFCAEn                         \n"
-"                             PIBCn=0,PUn,PDn                            \n"
-"                             PBDCn,PDSCn,PODCn                          \n"
-"                       (directIO chapter2.11)                           \n"
-"                                                                        \n"
-"*---------------------------------------------------------*/            \n"
-"#if ( MCU_PIN == PIN100 )                                               \n"
-"/*-- MCU_RH850_F1L:  PORT 0,8,9,10,11,JP0,AP0   --*/                    \n"
-"#define MCU_PORT_NUM      5                                             \n"
-"#define MCU_APORT_NUM     1                                             \n"
-"#define MCU_JPORT_NUM     1                                             \n"
-"\n"
-"\n"
-"/*----------------------- GPIO ACTIVE ---------------------------- */\n"
-"\n"
-"/* PMC: 0=port mode 1=alternative */\n"
-"/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n"
+	char* title = {
+		"/***********************************************************************\n"
+		"*   Copyright (C) Huizhou Desay SV Automotive Co., Ltd.                *\n"
+		"*                All Rights Reserved.                                  *\n"
+		"*   Department  : ITTI                                                 *\n"
+		"*   AUTHOR      : uidp5021                                             *\n"
+		"************************************************************************\n"
+		"* Object        :                                                       \n"
+		"* Module        :                                                       \n"
+		"* Instance      :                                                       \n"
+		"* Description   :                                                       \n"
+		"*-----------------------------------------------------------------------\n"
+		"* Version:                                                              \n"
+		"* Date:                                                                 \n"
+		"* Author:                                                               \n"
+		"***********************************************************************/\n"
+		"/*-History--------------------------------------------------------------\n"
+		"* Version       Date    Name    Changes and comment__DSB__DSBs          \n"
+		"------------------------------------------------------------------------\n"
+		"* 0.1	   Jun 26,2016   PEI Jingli  Initial version                     \n"
+		"------------------------------------------------------------------------\n"
+		"* 0.2	   Jun 29,2016   LIU Chenxi  Correct errors during merging		 \n"
+		"------------------------------------------------------------------------\n"
+		"* 0.3	   July 07,2016  PEI Jingli  Adapt xxpin MCU                     \n"
+		"------------------------------------------------------------------------\n"
+		"* 0.4	   Oct 24,2016  PEI Jingli   Config reset parameters,            \n"
+		"                                p0_6 as general io when active and reset\n"
+		"------------------------------------------------------------------------\n"
+		"* 0.5     Nov 10,2016  PEI Jingli    Set standby paramters              \n"
+		"------------------------------------------------------------------------\n"
+		"* 0.6     Nov 17,2016  PEI Jingli    Add Pn register for default setting\n"
+		"*=====================================================================*/\n"
+		"#ifndef _PIN_MAP_CC_H                                                   \n"
+		"#define _PIN_MAP_CC_H                                                   \n"
+		"#include \"CONFIG.H\"                                                     \n"
+		"#include \"SystemMode_Cfg.h\"                                             \n"
+		"                                                                        \n"
+		"                                                                        \n"
+		"/*--------------------configration method----------------------         \n"
+		"* 1. independent IO                                                     \n"
+		"    PMCn:bit=0 -> PMn                                                   \n"
+		"                         1:input  -> PIBCn=1,PUn,PDn                    \n"
+		"                                                                        \n"
+		"                         0:output->PBDCn,PDSCn,PODCn                    \n"
+		"*2. alternative mode                                                    \n"
+		"   PMCn:bit=1 ->PIPCn                                                   \n"
+		"                         0   -> PFCn,PFCEn,PFCAEn                       \n"
+		"                              ->PMn                                     \n"
+		"                                  1: input   -> same as 1.              \n"
+		"                                  0:output-> same as 1.                 \n"
+		"                                                                        \n"
+		"                         1  ->PFCn,PFCEn,PFCAEn                         \n"
+		"                             PIBCn=0,PUn,PDn                            \n"
+		"                             PBDCn,PDSCn,PODCn                          \n"
+		"                       (directIO chapter2.11)                           \n"
+		"                                                                        \n"
+		"*---------------------------------------------------------*/            \n"
+		"#if ( MCU_PIN == PIN100 )                                               \n"
+		"/*-- MCU_RH850_F1L:  PORT 0,8,9,10,11,JP0,AP0   --*/                    \n"
+		"#define MCU_PORT_NUM      5                                             \n"
+		"#define MCU_APORT_NUM     1                                             \n"
+		"#define MCU_JPORT_NUM     1                                             \n"
+		"\n"
+		"\n"
+		"/*----------------------- GPIO ACTIVE ---------------------------- */\n"
+		"\n"
+		"/* PMC: 0=port mode 1=alternative */\n"
+		"/* 15 14 13 12 || 11 10 9  8 || 7  6  5  4 || 3  2  1  0 */\n"
 };
 
 
 	F100 = fopen("MCU_PIN_CC.H", "w"); /* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
 	
 	/* 设置前面的标题 */
-	fputs(str, F100);
+	fputs(title, F100);
 
 	_MacroStr MacroStrActive[] = 
 	{
@@ -644,10 +645,11 @@ char* str = {
 }
 
 /*****************************************************************************
- *  Name        : OutPutGroupPinmuxString
- *  Description :
- *  Parameter   :
- *  Returns     : None
+ *  Name        : StringToBinary
+ *  Description : 把16位的输出转成二进制形式的字符串，并按照指定的注释格式显示
+ *  Parameter   : n：16位的整形数
+				  pszb：转出来的二进制字符串
+ *  Returns     : 返回值无意义
 *****************************************************************************/
 int StringToBinary(int n, char* pszb)
 {
@@ -713,7 +715,7 @@ int StringToBinary(int n, char* pszb)
 				  jump：要跳过的组，只能是一组，为JP和AP设置的
  *  Returns     : None
 *****************************************************************************/
-void OutPutGroupPinmuxString(_PinmuxString *s, U16* reg, U8 jump)
+void OutPutGroupPinmuxString(_PinmuxString *s)
 {
 	U8 temp[500];
 	U8 s_Hex[30];
@@ -729,20 +731,19 @@ void OutPutGroupPinmuxString(_PinmuxString *s, U16* reg, U8 jump)
 
 	for(U8 i = 0; i< s->num; i++)
 	{
-		if (jump != 0 && i == jump)
+		if (s->jump != 0 && i == s->jump)
 		{
 			continue;
 		}
 
 		strcpy(temp,s->MacroString[i]);
-		strncat(temp, tab, 5);/* 加入3个tab */
-		sprintf(s_Hex, "0x%04X", reg[i]);
+		strncat(temp, tab, 5);/* 加入5个tab */
+		sprintf(s_Hex, "0x%04X", s->reg[i]);
 		strcat(temp, s_Hex);
-		strcat(temp, " */\n\n");
-		printf("%s\n", s_Bin);
-
+		strcat(temp, " \n\n");
+	
 		/* 增加注释 */
-		StringToBinary(reg[i], s_Bin);	/* 字符串转二进制 */
+		StringToBinary(s->reg[i], s_Bin);	/* 字符串转二进制 */
 
 		fputs(s_Bin, F100);
 		fputs(temp, F100);
@@ -751,8 +752,11 @@ void OutPutGroupPinmuxString(_PinmuxString *s, U16* reg, U8 jump)
 
 /*****************************************************************************
  *  Name        : OutPutAlternative
- *  Description :
- *  Parameter   :
+ *  Description : 向文件中写功能口的寄存器配置
+ *  Parameter   : _AlternativeString *s：要显示的宏定义和组数
+                  RegPfc：PFC寄存器数组的地址
+				  RegPfce：PFCE寄存器数组的地址
+				  RegPfcae：PFCAE寄存器数组的地址
  *  Returns     : None
 *****************************************************************************/
 void OutPutAlternativeString(_AlternativeString *s, U16* RegPfc, U16* RegPfce, U16* RegPfcae)
@@ -775,7 +779,7 @@ void OutPutAlternativeString(_AlternativeString *s, U16* RegPfc, U16* RegPfce, U
 		"										"
 	};
 
-	printf("%s\n",s->MacroString[0][0]);
+	//printf("%s\n",s->MacroString[0][0]);
 
 	for (U8 i = 0; i < s->num; i++) /* 组别 */
 	{
@@ -784,9 +788,9 @@ void OutPutAlternativeString(_AlternativeString *s, U16* RegPfc, U16* RegPfce, U
 		strcpy(TempPfce, s->MacroString[i][1]);
 		strcpy(TempPfcae, s->MacroString[i][2]);
 
-		strncat(TempPfc, tab, 5);/* 加入3个tab */
-		strncat(TempPfce, tab, 5);/* 加入3个tab */
-		strncat(TempPfcae, tab, 5);/* 加入3个tab */
+		strncat(TempPfc, tab, 5);/* 加入5个tab */
+		strncat(TempPfce, tab, 5);/* 加入5个tab */
+		strncat(TempPfcae, tab, 5);/* 加入5个tab */
 
 		sprintf(HexPfc, "0x%04X", RegPfc[i]);
 		sprintf(HexPfce, "0x%04X", RegPfce[i]);
@@ -818,6 +822,13 @@ void OutPutAlternativeString(_AlternativeString *s, U16* RegPfc, U16* RegPfce, U
 
 }
 
+/*****************************************************************************
+ *  Name        : OutputModeString
+ *  Description : 向文件中写普通的寄存器配置
+ *  Parameter   : _MacroStr* MacroStr：要显示在前面的宏定义，比如"#define GPIO_PIPC0_ACTIVE_VAL"
+				  mode：有三种ACTIVE、STANDBY、RESET
+ *  Returns     : None
+*****************************************************************************/
 void OutputModeString(_MacroStr* MacroStr, U8 mode)
 {
 	_PinmuxString pobj;
@@ -825,7 +836,9 @@ void OutputModeString(_MacroStr* MacroStr, U8 mode)
 	/* 设置GPIO/功能口 */
 	pobj.num = 6;
 	pobj.MacroString = MacroStr[M_PMC];
-	OutPutGroupPinmuxString(&pobj, &PMC[mode][0], 0);
+	pobj.reg = &PMC[mode][0];
+	pobj.jump = 0;
+	OutPutGroupPinmuxString(&pobj);
 
 	/* 设置PIP */
 	fputs(MacroStr[M_PIPC], F100);
@@ -836,7 +849,9 @@ void OutputModeString(_MacroStr* MacroStr, U8 mode)
 
 	pobj.num = 7;
 	pobj.MacroString = MacroStr[M_PM];
-	OutPutGroupPinmuxString(&pobj, &PM[mode][0], 0);
+	pobj.reg = &PM[mode][0];
+	pobj.jump = 0;
+	OutPutGroupPinmuxString(&pobj);
 
 	/* 设置是否使用输入buffer */
 	fputs("\n\n/* Port InputBuffer Control: 0: unused 1: used */\n", F100);
@@ -844,12 +859,15 @@ void OutputModeString(_MacroStr* MacroStr, U8 mode)
 
 	pobj.num = 7;
 	pobj.MacroString = MacroStr[M_PIBC];
-	OutPutGroupPinmuxString(&pobj, &PIBC[mode][0], 0);
+	pobj.reg = &PIBC[mode][0];
+	pobj.jump = 0;
+	OutPutGroupPinmuxString(&pobj);
 
 	/* 功能口设置 */
 	fputs("\n\n/* PFCAE,PFCE,PFC:IN alternative mode, select a alternative function in 0~4.\n", F100);
 	fputs("*  binary value [PFCAEn_m,PFCEn_m,PFCn_m]b  from 0~4  is a alternative function.\n", F100);
 	fputs("*  <RH850.pdf> page 122 */\n", F100);
+
 	pobj.num = 6;
 	pobj.MacroString = MacroStr[M_ALT];
 	OutPutAlternativeString(&pobj, &PFC[mode][0], &PFCE[mode][0], &PFCAE[mode][0]);
@@ -860,7 +878,9 @@ void OutputModeString(_MacroStr* MacroStr, U8 mode)
 
 	pobj.num = 7;
 	pobj.MacroString = MacroStr[M_PBDC];
-	OutPutGroupPinmuxString(&pobj, &PBDC[mode][0], 0);
+	pobj.reg = &PBDC[mode][0];
+	pobj.jump = 0;
+	OutPutGroupPinmuxString(&pobj);
 
 	/* 上拉设置 */
 	fputs("\n\n/* PullUp Control: input mode.  1= internal pullup.\n", F100);
@@ -869,7 +889,9 @@ void OutputModeString(_MacroStr* MacroStr, U8 mode)
 
 	pobj.num = 7;
 	pobj.MacroString = MacroStr[M_PU];
-	OutPutGroupPinmuxString(&pobj, &PU[mode][0], AP);
+	pobj.reg = &PU[mode][0];
+	pobj.jump = AP;
+	OutPutGroupPinmuxString(&pobj);
 
 	/* 下拉设置 */
 	fputs("\n\n/* PullDown Control: input mode.  1= internal pulldown */\n", F100);
@@ -877,7 +899,9 @@ void OutputModeString(_MacroStr* MacroStr, U8 mode)
 
 	pobj.num = 7;
 	pobj.MacroString = MacroStr[M_PD];
-	OutPutGroupPinmuxString(&pobj, &PD[mode][0], AP);
+	pobj.reg = &PD[mode][0];
+	pobj.jump = AP;
+	OutPutGroupPinmuxString(&pobj);
 
 	/* 驱动能力选择 */
 	fputs("\n\n/* Port Driver Strength: output mode. 0:<=10mhz, 1:<=40mhz\n", F100);
@@ -886,7 +910,9 @@ void OutputModeString(_MacroStr* MacroStr, U8 mode)
 
 	pobj.num = 5;
 	pobj.MacroString = MacroStr[M_PDSC];
-	OutPutGroupPinmuxString(&pobj, &PDSC[mode][0], 0);
+	pobj.reg = &PDSC[mode][0];
+	pobj.jump = 0;
+	OutPutGroupPinmuxString(&pobj);
 
 	/* 推挽/开漏选择 */
 	fputs("\n\n/* Port open drain control: output mode. 0:push-pull, 1:open-drain*/\n", F100);
@@ -894,7 +920,9 @@ void OutputModeString(_MacroStr* MacroStr, U8 mode)
 
 	pobj.num = 7;
 	pobj.MacroString = MacroStr[M_PODC];
-	OutPutGroupPinmuxString(&pobj, &PODC[mode][0], AP);
+	pobj.reg = &PODC[mode][0];
+	pobj.jump = AP;
+	OutPutGroupPinmuxString(&pobj);
 
 	/* 默认IO电平设置 */
 	fputs("\n\n/* Set default for output pin */\n", F100);
@@ -902,5 +930,8 @@ void OutputModeString(_MacroStr* MacroStr, U8 mode)
 
 	pobj.num = 7;
 	pobj.MacroString = MacroStr[M_P];
-	OutPutGroupPinmuxString(&pobj, &P[mode][0], 0);
+	pobj.reg = &P[mode][0];
+	pobj.jump = 0;
+
+	OutPutGroupPinmuxString(&pobj);
 }

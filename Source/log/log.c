@@ -14,14 +14,14 @@
 #include <stdarg.h>
 #include <time.h>
 
-/*****************************************************************************
- *  Name        : ProcessExcel
- *  Description :
- *  Parameter   :
- *  Returns     : None
-*****************************************************************************/
 FILE* logFile;
 
+/*****************************************************************************
+ *  Name        : write_log
+ *  Description : pFile:文件指针
+ *  Parameter   :
+ *  Returns     : 返回值一般不使用
+*****************************************************************************/
 int write_log(FILE* pFile, const char *format, ...)
  {
 	 va_list arg;

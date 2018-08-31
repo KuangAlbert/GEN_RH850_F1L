@@ -5,7 +5,7 @@
  *   AUTHOR     :  uidp5021                                             *
  ************************************************************************
  * Object		:
- * Module		: Open Excel
+ * Module		: main函数
  * Instance		:
  * Description	:
  *-----------------------------------------------------------------------
@@ -37,8 +37,6 @@ int main()
 	GenPinmux_100pin();
 
 	fclose(logFile);/* 关闭文件 */
-
-	
 
 	//printf("\nPress any key to exit...");
 	//_getch();

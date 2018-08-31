@@ -57,17 +57,14 @@ typedef enum
 
 typedef enum
 {
-	DISABLE,
-	ENABLE
-} _SETTING;
-
-typedef enum
-{
 	GPIO,
 	ALT,
 } _GPIO_ALT;
 
 #define YES 1
 #define NO	0
+
+#define ENABLE 1
+#define DISABLE 0
 
 #endif // __PINMUX_REGISTER_
