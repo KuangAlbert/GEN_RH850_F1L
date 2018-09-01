@@ -21,6 +21,7 @@
 #define __PROCESS_EXCEL_
 #include "config.h"
 #include "PinmuxRegister.h"
+#include "libxl.h"
 
 #define R(a) (a-1)
 #define L(b) (b-65)
@@ -76,8 +77,13 @@ extern U16 PD[MODE_NUM][PORT_NUM];			/* PullDown Control */
 extern U16 PDSC[MODE_NUM][PORT_NUM];		/* Port Driver Strength */
 extern U16 PODC[MODE_NUM][PORT_NUM];		/* output mode */
 extern U16 P[MODE_NUM][PORT_NUM];			/* Port Value */
+extern BookHandle book;
 
-extern void ProcessExcel(void);
+extern S8 OpenExcel(wchar_t* ExcelName);
+extern U8 InterruptConfigEnable[256];
+extern void ProcessExcelPinmux(BookHandle book);
+extern void ProcessExcelInterrupt(BookHandle book);
 extern U8 SearchAlternativNum(wchar_t* cell, U16 Row, U8* type);
-
+extern S8 OpenExcel(wchar_t* ExcelName);
+extern void CloseExcel(BookHandle book);
 #endif /* PROCESS_EXCEL */

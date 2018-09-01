@@ -20,9 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Excel\ProcessExcel.c" />
-    <ClCompile Include="Source\file\GenPinmux_100pin.c" />
+    <ClCompile Include="Source\interrupt\ConstChar\intvect_c0.c.c" />
+    <ClCompile Include="Source\interrupt\ConstChar\osConfigBlock.c" />
+    <ClCompile Include="Source\interrupt\ConstChar\tcb.c" />
+    <ClCompile Include="Source\interrupt\ConstChar\tcbpost.c" />
+    <ClCompile Include="Source\interrupt\GenInterrupt_100pin.c" />
     <ClCompile Include="Source\log\log.c" />
     <ClCompile Include="Source\main.c" />
+    <ClCompile Include="Source\Pinmux\GenPinmux_100pin.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{554EF157-663F-43F1-8F2F-17B7CBDB18CF}</ProjectGuid>
@@ -95,7 +100,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\Source\include_common;.\Source\Excel;.\Source\libxl\include_c;.\Source\file;.\Source\log</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Source\interrupt;.\Source\include_common;.\Source\Excel;.\Source\libxl\include_c;.\Source\Pinmux;.\Source\log</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -114,7 +119,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\Source\include_common;.\Source\Excel;.\Source\libxl\include_c;.\Source\file;.\Source\log</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Source\interrupt;.\Source\include_common;.\Source\Excel;.\Source\libxl\include_c;.\Source\Pinmux;.\Source\log</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,7 +140,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\Source\include_common;.\Source\Excel;.\Source\libxl\include_c;.\Source\file;.\Source\log</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Source\interrupt;.\Source\include_common;.\Source\Excel;.\Source\libxl\include_c;.\Source\Pinmux;.\Source\log</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,7 +163,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\Source\include_common;.\Source\Excel;.\Source\libxl\include_c;.\Source\file;.\Source\log</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Source\interrupt;.\Source\include_common;.\Source\Excel;.\Source\libxl\include_c;.\Source\Pinmux;.\Source\log</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
