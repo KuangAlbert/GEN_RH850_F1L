@@ -31,6 +31,8 @@ FILE* F_tcbpost;
 FILE* F_osConfigBlock;
 
 static void GenInterrupt_intvect_c0_Tab(wchar_t* IntName, U16 cnt);
+static void GenInterrupt_intvect_c0_Text(_ExcelResultInterrupt* p);
+
 /*****************************************************************************
  *  Name        : GenInterrupt_intvect_c0_100pin
  *  Description :
@@ -49,14 +51,14 @@ static void GenInterrupt_intvect_c0_100pin(void)
 	/* 设置T1 */
 	fputs(intvect_c0_T1, F_intvect_c0);
 
-	/* 配置中断第一步 */
+	/* 第一部分 */
 	fputs("#pragma asm\n\n", F_intvect_c0);
 	fputs("   .align 512\n", F_intvect_c0);
 	fputs("   .section \".osEIINTVectorTable_c0\", \"ax\"\n\n", F_intvect_c0);
 	fputs("   .globl _osEIINTVectorTable_c0   /* start of the EIINT exception vector table */\n", F_intvect_c0);
 	fputs("_osEIINTVectorTable_c0:\n\n", F_intvect_c0);
 
-	for (U16 i = 0; i <= 253; i++)
+	for (U16 i = 0; i < 256; i++)
 	{
 		if (p->IntConfigEnable[i] == 1)
 		{
@@ -71,8 +73,50 @@ static void GenInterrupt_intvect_c0_100pin(void)
 		}
 		
 	}
+
+	fputs("_osEIINTVectorTableEnd_c0:						/* end of the EIINT exception vector table */\n\n", F_intvect_c0);
+	fputs("#pragma endasm\n", F_intvect_c0);
+
+	/* 第二部分 */
+	fputs("   	.section \".os_text\", \"ax\"\n", F_intvect_c0);
+	fputs("   	/* MISRA RULE 14.1 not violated: ISR_TAUD0I0 is branched via EIINT vector table. */\n", F_intvect_c0);
+
+	GenInterrupt_intvect_c0_Text(p);
+
+	fputs("#pragma endasm\n", F_intvect_c0);
 }
 
+/*****************************************************************************
+ *  Name        : GenInterrupt_intvect_c0_Text
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_intvect_c0_Text(_ExcelResultInterrupt* p)
+{
+	for (U16 Num = 0; Num < p->IntNum; Num++)
+	{
+		char temp[500] = "	osCAT2ISRC0(ISR_";
+		char Char_IntName[500] = { 0 };
+
+		WideCharToMultiByte(CP_ACP, 0, p->IntName[Num], wcslen(p->IntName[Num]) + 1, Char_IntName, 256, NULL, NULL);
+		strcat(temp, Char_IntName);
+
+		//printf("p->IntNum:%d   %s\n", p->IntNum, temp);
+		if (0 == wcscmp(p->IntName[Num], L"TAUD0I15"))
+		{
+			fputs("\n   /* MISRA RULE 14.1 not violated: ISR_TAUD0I0 is branched via EIINT vector table. */\n", F_intvect_c0);
+			strcat(temp, ", 0)\n");
+			fputs(temp, F_intvect_c0);
+		}
+		else
+		{
+			strcat(temp, ", 1)\n");
+			fputs(temp, F_intvect_c0);
+		}
+	}
+
+}
 /*****************************************************************************
  *  Name        : GenInterrupt_intvect_c0_Tab
  *  Description : IntName：中断源的名字

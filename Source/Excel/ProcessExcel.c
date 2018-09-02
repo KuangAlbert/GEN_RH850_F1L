@@ -107,49 +107,59 @@ void ProcessExcelInterrupt(BookHandle book)
 	if (sheet)
 	{
 		/* 2C -> 255C */
-		for (U16 i = R(2); i <= R(255); i++)
+		for (U16 Row = R(2); Row <= R(255); Row++)
 		{
 			/* 中断是否配置 */
-			cell = xlSheetReadStr(sheet, i, L('C'), 0);
-			write_log(logFile, "[%3d,C]	Interrupt Config Status: %ls\n", i, cell);
+			cell = xlSheetReadStr(sheet, Row, L('C'), 0);
+			write_log(logFile, "[%3d,C]	Interrupt Config Status: %ls\n", Row, cell);
 
 			if (NULL != cell && 0 == wcscmp(cell, L"Yes"))
 			{
 
 				/* 读取中断源名字 */
-				cell = xlSheetReadStr(sheet, i, L('D'), 0);
+				cell = xlSheetReadStr(sheet, Row, L('D'), 0);
 				if (NULL != cell)
 				{
 					wcscpy(p->IntName[p->IntNum], cell);
 				}
 				
-				write_log(logFile, "[%3d,D]	Interrupt Source Name: %ls\n", i, p->IntName[p->IntNum]);
+				write_log(logFile, "[%3d,D]	Interrupt Source Name: %ls\n", Row+1, p->IntName[p->IntNum]);
 				//printf("%ls\n", p->IntName[p->IntNum]);
 				if (NULL == cell)
 				{
-					write_log(logFile, "[%3d,D]	Error出现错误: %ls\n", i, cell);
+					write_log(logFile, "[%3d,D]	Error出现错误: %ls\n", Row + 1, cell);
 				}
 				
 				/* 读取中断函数名字 */
-				cell = xlSheetReadStr(sheet, i, L('E'), 0);
+				cell = xlSheetReadStr(sheet, Row, L('E'), 0);
 				if (NULL != cell)
 				{
 					wcscpy(p->IntFunName[p->IntNum], cell);
 				}
 				
-				write_log(logFile, "[%3d,E]	Interrupt Function Name: %ls\n", i, p->IntFunName[p->IntNum]);
+				write_log(logFile, "[%3d,E]	Interrupt Function Name: %ls\n", Row+1, p->IntFunName[p->IntNum]);
 
 				if (NULL == cell)
 				{
-					write_log(logFile, "[%3d,E]	Error出现错误: %ls\n", i, cell);
+					write_log(logFile, "[%3d,E]	Error出现错误: %ls\n", Row+1, cell);
 				}
 
-				p->IntConfigEnable[i - 1] = 1;
+				/* 读取中断号 */
+				p->IntNumber = xlSheetReadNum(sheet, Row, L('A'), NULL);
+
+				write_log(logFile, "[%3d,A]	%d\n", Row + 1, p->IntNumber);
+
+				if (p->IntNumber >255 )
+				{
+					write_log(logFile, "[%3d,A]	error p->IntNumber错误！\n", Row + 1);
+				}
+				
+				p->IntConfigEnable[Row - 1] = 1;
 				p->IntNum++;
 			}
 			else
 			{
-				p->IntConfigEnable[i - 1] = 0;
+				p->IntConfigEnable[Row - 1] = 0;
 			}
 		}
 		write_log(logFile, "+++++++ InterruptNum: %d\n", p->IntNum);
