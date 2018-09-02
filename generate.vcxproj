@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Excel\ProcessExcel.c" />
-    <ClCompile Include="Source\interrupt\ConstChar\intvect_c0.c.c" />
+    <ClCompile Include="Source\interrupt\ConstChar\intvect_c0.c" />
     <ClCompile Include="Source\interrupt\ConstChar\osConfigBlock.c" />
     <ClCompile Include="Source\interrupt\ConstChar\tcb.c" />
     <ClCompile Include="Source\interrupt\ConstChar\tcbpost.c" />
@@ -163,7 +163,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.\Source\interrupt;.\Source\include_common;.\Source\Excel;.\Source\libxl\include_c;.\Source\Pinmux;.\Source\log</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Source\interrupt;.\Source\include_common;.\Source\Excel;.\Source\Pinmux;.\Source\libxl\include_c;.\Source\interrupt\ConstChar;.\Source\log</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

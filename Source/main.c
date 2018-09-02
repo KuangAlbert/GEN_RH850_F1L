@@ -26,7 +26,7 @@
 #include "GenPinmux100pin.h"
 
 /* 为了让生成的EXE运行时不显示黑框 */
-#pragma comment( linker, "/subsystem:windows /entry:mainCRTStartup" )
+//#pragma comment( linker, "/subsystem:windows /entry:mainCRTStartup" )
 
 wchar_t* ccc = L"wodvfbfb";
 int main()
@@ -45,12 +45,13 @@ int main()
 	ProcessExcelPinmux(book);
 	ProcessExcelInterrupt(book);
 	GenPinmux_100pin();
+	GenInterrupt_100pin();
 	CloseExcel(book);
 
 	fclose(logFile);/* 关闭文件 */
 	ret = 0;
-	//printf("\nPress any key to exit...");
-	//_getch();
+	printf("\nPress any key to exit...");
+	_getch();
 
 	return ret;
 }

@@ -18,4 +18,7 @@
  * 1.0           2018/08/27			Lishi           add Init version
 *=========================================================================*/
 #ifndef __CONST_
-#define __PROCESS_EXCEL_
+#define __CONST_
+
+extern char* intvect_c0_T1;
+#endif

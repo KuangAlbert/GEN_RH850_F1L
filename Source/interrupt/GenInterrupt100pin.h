@@ -21,5 +21,6 @@
 #define __GEN_INTERRUPT_100PIN_
 #include "config.h"
 
+extern void GenInterrupt_100pin(void);
 
 #endif

@@ -45,8 +45,13 @@ U16 PODC[MODE_NUM][PORT_NUM];		/* output mode */
 U16 P[MODE_NUM][PORT_NUM];			/* Port Value */
 
 /* F1L 100pin中断配置情况 */
-U8 InterruptConfigEnable[256] = {0};
-U16 InterruptNum = 0;
+_ExcelResultInterrupt ExcelResultInterrupt = 
+{
+	{0},
+	{0},
+	{NULL},
+	{NULL}
+};
 
 BookHandle book;
 /*****************************************************************************
@@ -94,7 +99,7 @@ void CloseExcel(BookHandle book)
 void ProcessExcelInterrupt(BookHandle book)
 {
 	wchar_t* cell;
-
+	_ExcelResultInterrupt* p = &ExcelResultInterrupt;
 
 	/* 打开第二个sheet */
 	SheetHandle sheet = xlBookGetSheet(book, 1);
@@ -102,22 +107,52 @@ void ProcessExcelInterrupt(BookHandle book)
 	if (sheet)
 	{
 		/* 2C -> 255C */
-		for (U16 i = 2; i <= 255; i++)
+		for (U16 i = R(2); i <= R(255); i++)
 		{
+			/* 中断是否配置 */
 			cell = xlSheetReadStr(sheet, i, L('C'), 0);
-			write_log(logFile, "[%3d,F]	Interrupt: %ls\n", i, cell);
+			write_log(logFile, "[%3d,C]	Interrupt Config Status: %ls\n", i, cell);
 
 			if (NULL != cell && 0 == wcscmp(cell, L"Yes"))
 			{
-				InterruptConfigEnable[i-2] = 1;
-				InterruptNum++;
+
+				/* 读取中断源名字 */
+				cell = xlSheetReadStr(sheet, i, L('D'), 0);
+				if (NULL != cell)
+				{
+					wcscpy(p->IntName[p->IntNum], cell);
+				}
+				
+				write_log(logFile, "[%3d,D]	Interrupt Source Name: %ls\n", i, p->IntName[p->IntNum]);
+				//printf("%ls\n", p->IntName[p->IntNum]);
+				if (NULL == cell)
+				{
+					write_log(logFile, "[%3d,D]	Error出现错误: %ls\n", i, cell);
+				}
+				
+				/* 读取中断函数名字 */
+				cell = xlSheetReadStr(sheet, i, L('E'), 0);
+				if (NULL != cell)
+				{
+					wcscpy(p->IntFunName[p->IntNum], cell);
+				}
+				
+				write_log(logFile, "[%3d,E]	Interrupt Function Name: %ls\n", i, p->IntFunName[p->IntNum]);
+
+				if (NULL == cell)
+				{
+					write_log(logFile, "[%3d,E]	Error出现错误: %ls\n", i, cell);
+				}
+
+				p->IntConfigEnable[i - 1] = 1;
+				p->IntNum++;
 			}
 			else
 			{
-				InterruptConfigEnable[i-2] = 0;
+				p->IntConfigEnable[i - 1] = 0;
 			}
 		}
-		write_log(logFile, "+++++++ InterruptNum: %d\n", InterruptNum);
+		write_log(logFile, "+++++++ InterruptNum: %d\n", p->IntNum);
 	}
 }
 
@@ -132,8 +167,8 @@ void ProcessExcelPinmux(BookHandle book)
 	
 	wchar_t* cell;
 
-	_ExcelResult ExcelResult;
-	_ExcelResult* p = &ExcelResult;
+	_ExcelResultPinmux ExcelResultPinmux;
+	_ExcelResultPinmux* p = &ExcelResultPinmux;
 
 	/* 打开第二个sheet */
 	SheetHandle sheet = xlBookGetSheet(book, 0);
@@ -145,7 +180,7 @@ void ProcessExcelPinmux(BookHandle book)
 		
 		for (Row = R_STAET_100; Row <= R_END_100; Row++)
 		{
-			memset(p, 0xFF, sizeof(_ExcelResult));
+			memset(p, 0xFF, sizeof(_ExcelResultPinmux));
 			
 			/* 第F列 */
 			cell = xlSheetReadStr(sheet, Row, L('F'), 0);
@@ -209,7 +244,7 @@ void ProcessExcelPinmux(BookHandle book)
 			
 			/* 第D列 */
 			p->PortNumber = xlSheetReadNum(sheet, Row, L('D'), NULL);
-			write_log(logFile, "[%3d,D]	%d\n", Row + 1, ExcelResult.PortNumber);
+			write_log(logFile, "[%3d,D]	%d\n", Row + 1, p->PortNumber);
 			
 			if (p->PortNumber < 0 || p->PortNumber > 15)
 			{

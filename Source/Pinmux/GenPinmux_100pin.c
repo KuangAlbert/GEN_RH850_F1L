@@ -577,7 +577,7 @@ void GenPinmux_100pin(void)
 };
 
 	/* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
-	F100 = fopen("MCU_PIN_CC.H", "w"); 
+	F100 = fopen("MCU_PIN_CC.H", "w");
 	
 	/* 设置前面的标题 */
 	fputs(title, F100);
@@ -805,7 +805,7 @@ void OutPutAlternativeString(_AlternativeString *s, U16* RegPfc, U16* RegPfce, U
 		strcat(TempPfcae, " \n");
 
 		/* 增加注释 */
-		StringToBinary(RegPfc[i], BinPfc);	/* 字符串转二进制 */
+		StringToBinary(RegPfc[i], BinPfc);		/* 字符串转二进制 */
 		StringToBinary(RegPfce[i], BinPfce);	/* 字符串转二进制 */
 		StringToBinary(RegPfcae[i], BinPfcae);	/* 字符串转二进制 */
 

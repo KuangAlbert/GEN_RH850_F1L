@@ -36,7 +36,7 @@
 #define		CLEAR_BIT(x,n)		x=(x &~(1U<<(n)))
 
 
-typedef struct __ExcelResult
+typedef struct __ExcelResultPinmux
 {
 	U8 mode;		/* 引脚模式，ACTIVE,STANDBY,RESET */
 	U8 whether;		/* 是否配置 */
@@ -56,7 +56,15 @@ typedef struct __ExcelResult
 	U8 RegType;
 	U8 AltType;
 	U8 AltNum;
-}_ExcelResult;
+}_ExcelResultPinmux;
+
+typedef struct __ExcelResultInterrupt
+{
+	U8 IntConfigEnable[256];	/* 中断配置情况 */
+	U16 IntNum;					/* 配置的中断总数 */
+	wchar_t * IntName[256][100];		/* 中断源名字 */
+	wchar_t * IntFunName[256][100];	/* 中断函数名名字 */
+}_ExcelResultInterrupt;
 
 #define PORT_NUM 7
 #define MODE_NUM 3
@@ -78,6 +86,7 @@ extern U16 PDSC[MODE_NUM][PORT_NUM];		/* Port Driver Strength */
 extern U16 PODC[MODE_NUM][PORT_NUM];		/* output mode */
 extern U16 P[MODE_NUM][PORT_NUM];			/* Port Value */
 extern BookHandle book;
+extern _ExcelResultInterrupt ExcelResultInterrupt;
 
 extern S8 OpenExcel(wchar_t* ExcelName);
 extern U8 InterruptConfigEnable[256];
