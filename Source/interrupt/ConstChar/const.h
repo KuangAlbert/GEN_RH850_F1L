@@ -25,4 +25,7 @@ extern char* intvect_c0_T1;
 extern char* tcb_T1;
 extern char* tcb_T2;
 extern char* tcb_T3;
+
+extern char* tcbpost_T1;
+extern char* tcbpost_T2;
 #endif

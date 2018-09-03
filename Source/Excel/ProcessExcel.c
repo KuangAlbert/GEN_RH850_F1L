@@ -136,6 +136,12 @@ void ProcessExcelInterrupt(BookHandle book)
 				{
 					wcscpy(p->IntFunName[p->IntNum], cell);
 				}
+				else
+				{
+					//p->IntFunName[p->IntNum] = {0};
+					// ÌáÊ¾³ö´í
+					//printf("%d\n", sizeof(p->IntFunName[p->IntNum]));
+				}
 				
 				write_log(logFile, "[%3d,E]	Interrupt Function Name: %ls\n", Row+1, p->IntFunName[p->IntNum]);
 

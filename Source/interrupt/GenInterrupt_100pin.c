@@ -34,6 +34,7 @@ static void GenInterrupt_intvect_c0_Tab(wchar_t* IntName, U16 cnt);
 static void GenInterrupt_intvect_c0_Text(_ExcelResultInterrupt* p);
 static void GenInterrupt_intvect_c0_100pin(void);
 static void GenInterrupt_tcb_100pin(void);
+static void GenInterrupt_tcbpost_100pin(void);
 
 /*****************************************************************************
  *  Name        : GenInterrupt_100pin
@@ -45,6 +46,7 @@ void GenInterrupt_100pin(void)
 {
 	GenInterrupt_intvect_c0_100pin();
 	GenInterrupt_tcb_100pin();
+	GenInterrupt_tcbpost_100pin();
 }
 
 /*****************************************************************************
@@ -222,7 +224,7 @@ static void GenInterrupt_tcb_AllISRs(_ExcelResultInterrupt* p)
 static void GenInterrupt_tcb_100pin(void)
 {
 	_ExcelResultInterrupt* p = &ExcelResultInterrupt;
-	/***************************************** 生成tcb.h ********************************************************************/
+
 	/* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
 	F_tcb = fopen("tcb.h", "w");
 
@@ -242,6 +244,104 @@ static void GenInterrupt_tcb_100pin(void)
 	fputs(tcb_T3, F_tcb);
 
 	fclose(F_tcb);
+}
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_tcbpost_ID
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_tcbpost_ID(_ExcelResultInterrupt* p)
+{
+	char temp[500] = "#define osdNumberOfAllISRs  ";
+	char temp1[500] = "#define osdNumberOfCat2ISRs ";
+	char Char_IntName[500] = { 0 };
+	char AllISRs[10];
+
+	fputs("/* ISR IDs */\n", F_tcbpost);
+
+	for (U16 Num = 0; Num < p->IntNum; Num++)
+	{
+		char temp[500] = "#define ISR_";
+		char Char_IntName[500] = { 0 };
+		char ID[10];
+
+		WideCharToMultiByte(CP_ACP, 0, p->IntName[Num], wcslen(p->IntName[Num]) + 1, Char_IntName, 256, NULL, NULL);
+		strcat(temp, Char_IntName);
+
+		strcat(temp, " ((ISRType)");
+		sprintf(ID, "%d", Num);
+		strcat(temp, ID);
+		strcat(temp, "\n");
+		fputs(temp, F_tcbpost);
+	}
+}
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_tcbpost_function
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_tcbpost_function(_ExcelResultInterrupt* p)
+{
+	char temp[500] = "#define osdNumberOfAllISRs  ";
+	char temp1[500] = "#define osdNumberOfCat2ISRs ";
+	char Char_IntName[500] = { 0 };
+	char AllISRs[10];
+
+	fputs("/* ISR function prototypes */ \n", F_tcbpost);
+
+	for (U16 Num = 0; Num < p->IntNum; Num++)
+	{
+		char temp[500] = "void ";
+		char Char_IntName[500] = { 0 };
+		char ID[10];
+
+		if (NULL == p->IntFunName[Num])
+		{
+			continue;
+		}
+
+		WideCharToMultiByte(CP_ACP, 0, p->IntFunName[Num], wcslen(p->IntFunName[Num]) + 1, Char_IntName, 256, NULL, NULL);
+
+		strcat(temp, Char_IntName);
+
+		strcat(temp, "(void);");
+		strcat(temp, "\n");
+		fputs(temp, F_tcbpost);
+	}
+}
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_tcbpost_100pin
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_tcbpost_100pin(void)
+{
+	_ExcelResultInterrupt* p = &ExcelResultInterrupt;
+
+	/* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
+	F_tcbpost = fopen("tcbpost.h", "w");
+
+	/* 设置T1 */
+	fputs(tcbpost_T1, F_tcbpost);
+
+	/* 设置ID */
+	GenInterrupt_tcbpost_ID(p);
+
+	/* 设置中断函数申明 */
+	fputs("\n#if ((osdSC== SC3) || (osdSC== SC4))\n", F_tcbpost);
+	fputs("#endif\n\n", F_tcbpost);
+	GenInterrupt_tcbpost_function(p);
+
+	/* 设置T2 */
+	fputs(tcbpost_T2, F_tcbpost);
+
+	fclose(F_tcbpost);
 }
 
 
