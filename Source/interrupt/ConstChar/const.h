@@ -21,4 +21,8 @@
 #define __CONST_
 
 extern char* intvect_c0_T1;
+
+extern char* tcb_T1;
+extern char* tcb_T2;
+extern char* tcb_T3;
 #endif

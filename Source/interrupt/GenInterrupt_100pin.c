@@ -32,6 +32,20 @@ FILE* F_osConfigBlock;
 
 static void GenInterrupt_intvect_c0_Tab(wchar_t* IntName, U16 cnt);
 static void GenInterrupt_intvect_c0_Text(_ExcelResultInterrupt* p);
+static void GenInterrupt_intvect_c0_100pin(void);
+static void GenInterrupt_tcb_100pin(void);
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_100pin
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+void GenInterrupt_100pin(void)
+{
+	GenInterrupt_intvect_c0_100pin();
+	GenInterrupt_tcb_100pin();
+}
 
 /*****************************************************************************
  *  Name        : GenInterrupt_intvect_c0_100pin
@@ -43,7 +57,6 @@ static void GenInterrupt_intvect_c0_100pin(void)
 {
 	_ExcelResultInterrupt* p = &ExcelResultInterrupt;
 	U16 IntNum = 0;
-
 
 	/* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
 	F_intvect_c0 = fopen("intvect_c0.c", "w");
@@ -64,14 +77,14 @@ static void GenInterrupt_intvect_c0_100pin(void)
 		{
 			if (IntNum <= p->IntNum)
 			{
-				GenInterrupt_intvect_c0_Tab(p->IntName[IntNum++],i);
+				GenInterrupt_intvect_c0_Tab(p->IntName[IntNum++], i);
 			}
 		}
 		else
 		{
 			fputs("   .word _osUnhandledEIINTException\n", F_intvect_c0);
 		}
-		
+
 	}
 
 	fputs("_osEIINTVectorTableEnd_c0:						/* end of the EIINT exception vector table */\n\n", F_intvect_c0);
@@ -84,6 +97,39 @@ static void GenInterrupt_intvect_c0_100pin(void)
 	GenInterrupt_intvect_c0_Text(p);
 
 	fputs("#pragma endasm\n", F_intvect_c0);
+	fclose(F_intvect_c0);
+}
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_intvect_c0_Tab
+ *  Description : IntName：中断源的名字
+				  cnt：要配置的中断序号
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_intvect_c0_Tab(wchar_t* IntName, U16 cnt)
+{
+	char temp[500] = "   .word _ISR_";
+	char Char_IntName[500];
+	char commentTabCnt[50];
+	/* Tab字符串 */
+	U8 tab[10] =
+	{
+		"										"
+	};
+
+	WideCharToMultiByte(CP_ACP, 0, IntName, wcslen(IntName) + 1, Char_IntName, 256, NULL, NULL);
+	strcat(temp, Char_IntName);
+	strcat(temp, "_CAT2");
+
+	strncat(temp, tab, 5);/* 加入5个tab */
+	strcat(temp, "/* interrupt index = ");
+	sprintf(commentTabCnt, "%03d", cnt);
+	strcat(temp, commentTabCnt);
+	strcat(temp, " */");
+
+	strcat(temp, "\n");
+	fputs(temp, F_intvect_c0);
 }
 
 /*****************************************************************************
@@ -117,44 +163,87 @@ static void GenInterrupt_intvect_c0_Text(_ExcelResultInterrupt* p)
 	}
 
 }
+
 /*****************************************************************************
- *  Name        : GenInterrupt_intvect_c0_Tab
- *  Description : IntName：中断源的名字
-				  cnt：要配置的中断序号
- *  Parameter   :
- *  Returns     : None
-*****************************************************************************/
-static void GenInterrupt_intvect_c0_Tab(wchar_t* IntName, U16 cnt)
-{
-	char temp[500] = "   .word _ISR_";
-	char Char_IntName[500];
-	char commentTabCnt[50];
-	/* Tab字符串 */
-	U8 tab[10] =
-	{
-		"										"
-	};
-
-	WideCharToMultiByte(CP_ACP, 0, IntName, wcslen(IntName) + 1, Char_IntName, 256, NULL, NULL);
-	strcat(temp, Char_IntName);
-	strcat(temp, "_CAT2");
-
-	strncat(temp, tab, 5);/* 加入5个tab */
-	strcat(temp, "/* interrupt index = ");
-	sprintf(commentTabCnt, "%03d", cnt);
-	strcat(temp, commentTabCnt);
-	strcat(temp, " */");
-
-	strcat(temp, "\n");
-	fputs(temp, F_intvect_c0);
-}
-/*****************************************************************************
- *  Name        : GenInterrupt_100pin
+ *  Name        : GenInterrupt_tcb_index
  *  Description :
  *  Parameter   :
  *  Returns     : None
 *****************************************************************************/
-void GenInterrupt_100pin(void)
+static void GenInterrupt_tcb_index(_ExcelResultInterrupt* p)
 {
-	GenInterrupt_intvect_c0_100pin();
+	for (U16 Num = 0; Num < p->IntNum; Num++)
+	{
+		char temp[500] = "#define ISR_";
+		char Char_IntName[500] = { 0 };
+		char index[10];
+
+		WideCharToMultiByte(CP_ACP, 0, p->IntName[Num], wcslen(p->IntName[Num]) + 1, Char_IntName, 256, NULL, NULL);
+		strcat(temp, Char_IntName);
+
+		strcat(temp, "_index  ");
+		sprintf(index, "%d", Num);
+		strcat(temp, index);
+		strcat(temp, "\n");
+		fputs(temp, F_tcb);
+	}
 }
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_tcb_AllISRs
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_tcb_AllISRs(_ExcelResultInterrupt* p)
+{
+	char temp[500] = "#define osdNumberOfAllISRs  ";
+	char temp1[500] = "#define osdNumberOfCat2ISRs ";
+	char Char_IntName[500] = { 0 };
+	char AllISRs[10];
+
+	sprintf(AllISRs, "%d", p->IntNum + 1);
+	strcat(temp, AllISRs);
+	strcat(temp, "\n");
+	fputs(temp, F_tcb);
+	fputs("#define osdNumberOfAllTasks 7\n", F_tcb);
+	fputs("#define osdNumberOfCat1ISRs 0\n", F_tcb);
+
+	fputs(temp, F_tcb);
+	strcat(temp, AllISRs);
+	strcat(temp, "\n\n");
+}
+/*****************************************************************************
+ *  Name        : GenInterrupt_tcb_100pin
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_tcb_100pin(void)
+{
+	_ExcelResultInterrupt* p = &ExcelResultInterrupt;
+	/***************************************** 生成tcb.h ********************************************************************/
+	/* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
+	F_tcb = fopen("tcb.h", "w");
+
+	/* 设置T1 */
+	fputs(tcb_T1, F_tcb);
+
+	/* 设置index */
+	GenInterrupt_tcb_index(p);
+
+	/* 设置T2 */
+	fputs(tcb_T2, F_tcb);
+
+	/* 设置中断总数量 */
+	GenInterrupt_tcb_AllISRs(p);
+
+	/* 设置T3 */
+	fputs(tcb_T3, F_tcb);
+
+	fclose(F_tcb);
+}
+
+
+
+
