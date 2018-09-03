@@ -35,6 +35,7 @@ static void GenInterrupt_intvect_c0_Text(_ExcelResultInterrupt* p);
 static void GenInterrupt_intvect_c0_100pin(void);
 static void GenInterrupt_tcb_100pin(void);
 static void GenInterrupt_tcbpost_100pin(void);
+static void GenInterrupt_osConfigBlock_100pin(void);
 
 /*****************************************************************************
  *  Name        : GenInterrupt_100pin
@@ -47,6 +48,7 @@ void GenInterrupt_100pin(void)
 	GenInterrupt_intvect_c0_100pin();
 	GenInterrupt_tcb_100pin();
 	GenInterrupt_tcbpost_100pin();
+	GenInterrupt_osConfigBlock_100pin();
 }
 
 /*****************************************************************************
@@ -286,10 +288,6 @@ static void GenInterrupt_tcbpost_ID(_ExcelResultInterrupt* p)
 *****************************************************************************/
 static void GenInterrupt_tcbpost_function(_ExcelResultInterrupt* p)
 {
-	char temp[500] = "#define osdNumberOfAllISRs  ";
-	char temp1[500] = "#define osdNumberOfCat2ISRs ";
-	char Char_IntName[500] = { 0 };
-	char AllISRs[10];
 
 	fputs("/* ISR function prototypes */ \n", F_tcbpost);
 
@@ -342,6 +340,112 @@ static void GenInterrupt_tcbpost_100pin(void)
 	fputs(tcbpost_T2, F_tcbpost);
 
 	fclose(F_tcbpost);
+}
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_osConfigBlock_7
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_osConfigBlock_7(_ExcelResultInterrupt* p)
+{
+	for (U16 Num = 0; Num < p->IntNum; Num++)
+	{
+		char temp[500] = "      0,";
+		char Char_IntName[500] = { 0 };
+		char index[10];
+		/* Tab字符串 */
+		U8 tab[10] =
+		{
+			"										"
+		};
+
+		strncat(temp, tab, 2); /* 增加两个tab */
+		strcat(temp, "/* ");
+
+		sprintf(index, "%3d", Num);
+		strcat(temp, index);
+
+		strcat(temp, " ISR_");
+
+		WideCharToMultiByte(CP_ACP, 0, p->IntName[Num], wcslen(p->IntName[Num]) + 1, Char_IntName, 256, NULL, NULL);
+
+		strcat(temp, Char_IntName);
+
+		strcat(temp, " */");
+		strcat(temp, "\n");
+		fputs(temp, F_osConfigBlock);
+	}
+	fputs("      0,		/* do not move */\n", F_osConfigBlock);
+}
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_osConfigBlock_8
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_osConfigBlock_8(_ExcelResultInterrupt* p)
+{
+	for (U16 Num = 0; Num < p->IntNum; Num++)
+	{
+		char temp[500] = "      INVALID_OSAPPLICATION,";
+		char Char_IntName[500] = { 0 };
+		char index[10];
+		/* Tab字符串 */
+		U8 tab[10] =
+		{
+			"										"
+		};
+
+		strncat(temp, tab, 2); /* 增加两个tab */
+		strcat(temp, "/* ");
+
+		sprintf(index, "%3d", Num);
+		strcat(temp, index);
+
+		strcat(temp, " ISR_");
+
+		WideCharToMultiByte(CP_ACP, 0, p->IntName[Num], wcslen(p->IntName[Num]) + 1, Char_IntName, 256, NULL, NULL);
+
+		strcat(temp, Char_IntName);
+
+		strcat(temp, " */");
+		strcat(temp, "\n");
+		fputs(temp, F_osConfigBlock);
+	}
+	fputs("      INVALID_OSAPPLICATION,		/* do not move */\n", F_osConfigBlock);
+}
+/*****************************************************************************
+ *  Name        : GenInterrupt_osConfigBlock_100pin
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_osConfigBlock_100pin(void)
+{
+	_ExcelResultInterrupt* p = &ExcelResultInterrupt;
+
+	/* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
+	F_osConfigBlock = fopen("osConfigBlock.c", "w");
+
+	/* 设置T1 */
+	fputs(osConfigBlock_T1, F_osConfigBlock);
+
+	/* Sub-Container 7, isr trusted */
+	fputs("   /* Sub-Container 7, isr trusted */\n", F_osConfigBlock);
+	fputs("   {\n", F_osConfigBlock);
+	GenInterrupt_osConfigBlock_7(p);
+	fputs("   },\n", F_osConfigBlock);
+
+	/* Sub-Container 8, translation table: isr -> os-application */
+	fputs("   /* Sub-Container 8, translation table: isr -> os-application */\n", F_osConfigBlock);
+	fputs("   {\n", F_osConfigBlock);
+	GenInterrupt_osConfigBlock_8(p);
+	fputs("   },\n", F_osConfigBlock);
+
+	fclose(F_osConfigBlock);
 }
 
 
