@@ -49,6 +49,7 @@ _ExcelResultInterrupt ExcelResultInterrupt =
 {
 	{0},
 	{0},
+	{0},
 	{NULL},
 	{NULL}
 };
@@ -151,11 +152,11 @@ void ProcessExcelInterrupt(BookHandle book)
 				}
 
 				/* ¶ÁÈ¡ÖĞ¶ÏºÅ */
-				p->IntNumber = xlSheetReadNum(sheet, Row, L('A'), NULL);
+				p->IntNumber[p->IntNum] = xlSheetReadNum(sheet, Row, L('A'), NULL);
 
-				write_log(logFile, "[%3d,A]	%d\n", Row + 1, p->IntNumber);
+				write_log(logFile, "[%3d,A]	%d\n", Row + 1, p->IntNumber[p->IntNum]);
 
-				if (p->IntNumber >255 )
+				if (p->IntNumber[p->IntNum] > 255 )
 				{
 					write_log(logFile, "[%3d,A]	error p->IntNumber´íÎó£¡\n", Row + 1);
 				}

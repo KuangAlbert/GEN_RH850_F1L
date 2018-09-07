@@ -36,6 +36,10 @@ static void GenInterrupt_intvect_c0_100pin(void);
 static void GenInterrupt_tcb_100pin(void);
 static void GenInterrupt_tcbpost_100pin(void);
 static void GenInterrupt_osConfigBlock_100pin(void);
+static void GenInterrupt_osConfigBlock_12(_ExcelResultInterrupt* p);
+static void GenInterrupt_osConfigBlock_14(_ExcelResultInterrupt* p);
+static void GenInterrupt_osConfigBlock_27(_ExcelResultInterrupt* p);
+static void GenInterrupt_osConfigBlock_28(_ExcelResultInterrupt* p);
 
 /*****************************************************************************
  *  Name        : GenInterrupt_100pin
@@ -417,6 +421,256 @@ static void GenInterrupt_osConfigBlock_8(_ExcelResultInterrupt* p)
 	}
 	fputs("      INVALID_OSAPPLICATION,		/* do not move */\n", F_osConfigBlock);
 }
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_osConfigBlock_12
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_osConfigBlock_12(_ExcelResultInterrupt* p)
+{
+	for (U16 Num = 0; Num < p->IntNum; Num++)
+	{
+		char temp[500] = "      &";
+		char Char_IntName[500] = { 0 };
+		char Char_IntFunName[500] = { 0 };
+		char index[10];
+		/* Tab字符串 */
+		U8 tab[10] =
+		{
+			"										"
+		};
+
+		WideCharToMultiByte(CP_ACP, 0, p->IntFunName[Num], wcslen(p->IntFunName[Num]) + 1, Char_IntFunName, 256, NULL, NULL);
+
+		strcat(temp, Char_IntFunName);
+		strcat(temp, ",");
+
+		strncat(temp, tab, 3); /* 增加两个tab */
+		strcat(temp, "/* ");
+
+		sprintf(index, "%3d", Num);
+		strcat(temp, index);
+
+		strcat(temp, " ISR_");
+
+		WideCharToMultiByte(CP_ACP, 0, p->IntName[Num], wcslen(p->IntName[Num]) + 1, Char_IntName, 256, NULL, NULL);
+
+		strcat(temp, Char_IntName);
+
+		strcat(temp, " */");
+		strcat(temp, "\n");
+		fputs(temp, F_osConfigBlock);
+	}
+	fputs("      (osuint8)0\n", F_osConfigBlock);
+}
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_osConfigBlock_14
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_osConfigBlock_14(_ExcelResultInterrupt* p)
+{
+	for (U16 Num = 0; Num < p->IntNum; Num++)
+	{
+		char temp[500] = "      0U,";
+		char Char_IntName[500] = { 0 };
+		char index[10];
+		/* Tab字符串 */
+		U8 tab[10] =
+		{
+			"										"
+		};
+
+		strncat(temp, tab, 2); /* 增加两个tab */
+		strcat(temp, "/* ");
+
+		sprintf(index, "%3d", Num);
+		strcat(temp, index);
+
+		strcat(temp, " ISR_");
+
+		WideCharToMultiByte(CP_ACP, 0, p->IntName[Num], wcslen(p->IntName[Num]) + 1, Char_IntName, 256, NULL, NULL);
+
+		strcat(temp, Char_IntName);
+
+		strcat(temp, " */");
+		strcat(temp, "\n");
+		fputs(temp, F_osConfigBlock);
+	}
+	fputs("      (CoreIdType)0\n", F_osConfigBlock);
+}
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_osConfigBlock_27
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_osConfigBlock_27(_ExcelResultInterrupt* p)
+{
+	for (U16 Num = 0; Num < p->IntNum; Num++)
+	{
+		char temp[500] = "      {\n";
+		char Char_IntName[500] = { 0 };
+		char index[10];
+		/* Tab字符串 */
+		U8 tab[10] =
+		{
+			"										"
+		};
+
+		strcat(temp, "         (osStackPtrType)osdISR_ADD_BOT,");
+		strncat(temp, tab, 2); /* 增加两个tab */
+		strcat(temp, "/* ");
+
+		sprintf(index, "%3d", Num);
+		strcat(temp, index);
+
+		strcat(temp, " ISR_");
+
+		WideCharToMultiByte(CP_ACP, 0, p->IntName[Num], wcslen(p->IntName[Num]) + 1, Char_IntName, 256, NULL, NULL);
+
+		strcat(temp, Char_IntName);
+
+		strcat(temp, " */\n");
+		strcat(temp, "         (osStackPtrType)osdISR_ADD_TOP\n");
+		strcat(temp, "      }");
+
+		strcat(temp, "\n");
+
+		fputs(temp, F_osConfigBlock);
+	}
+	fputs("     {\n		(osStackPtrType)0,                      /* do not movw */\n		(osStackPtrType)0\n}", F_osConfigBlock);
+}
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_osConfigBlock_28
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_osConfigBlock_28(_ExcelResultInterrupt* p)
+{
+	for (U16 Num = 0; Num < p->IntNum; Num++)
+	{
+		char temp[500] = "      (osuint16) ";
+		char Char_IntName[500] = { 0 };
+		char index[10];
+		char IntNum[10];
+
+		/* Tab字符串 */
+		U8 tab[10] =
+		{
+			"										"
+		};
+
+		sprintf(IntNum, "%3d", p->IntNumber[Num]);
+		strcat(temp, IntNum);
+		strcat(temp, ",");
+		strncat(temp, tab, 2); /* 增加两个tab */
+		strcat(temp, "/* ");
+
+		sprintf(index, "%3d", Num);
+		strcat(temp, index);
+
+		strcat(temp, " ISR_");
+
+		WideCharToMultiByte(CP_ACP, 0, p->IntName[Num], wcslen(p->IntName[Num]) + 1, Char_IntName, 256, NULL, NULL);
+
+		strcat(temp, Char_IntName);
+		strcat(temp, " */");
+		strcat(temp, "\n");
+
+		fputs(temp, F_osConfigBlock);
+	}
+	fputs("      (osuint16)  0			/* empty */\n}", F_osConfigBlock);
+}
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_osConfigBlock_29
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_osConfigBlock_29(_ExcelResultInterrupt* p)
+{
+	for (U16 Num = 0; Num < p->IntNum; Num++)
+	{
+		char temp[500] = "      (osuint16)0x0001,";
+		char Char_IntName[500] = { 0 };
+		char index[10];
+		char IntNum[10];
+
+		/* Tab字符串 */
+		U8 tab[10] =
+		{
+			"										"
+		};
+
+
+		strncat(temp, tab, 2); /* 增加两个tab */
+		strcat(temp, "/* ");
+
+		sprintf(index, "%3d", Num);
+		strcat(temp, index);
+
+		strcat(temp, " ISR_");
+
+		WideCharToMultiByte(CP_ACP, 0, p->IntName[Num], wcslen(p->IntName[Num]) + 1, Char_IntName, 256, NULL, NULL);
+
+		strcat(temp, Char_IntName);
+		strcat(temp, " */");
+		strcat(temp, "\n");
+
+		fputs(temp, F_osConfigBlock);
+	}
+	fputs("      (osuint16)0x0000		/* empty */\n}", F_osConfigBlock);
+}
+
+/*****************************************************************************
+ *  Name        : GenInterrupt_osConfigBlock_30
+ *  Description :
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+static void GenInterrupt_osConfigBlock_30(_ExcelResultInterrupt* p)
+{
+	for (U16 Num = 0; Num < p->IntNum; Num++)
+	{
+		char temp[500] = "      0U,";
+		char Char_IntName[500] = { 0 };
+		char index[10];
+		char IntNum[10];
+
+		/* Tab字符串 */
+		U8 tab[10] =
+		{
+			"										"
+		};
+
+
+		strncat(temp, tab, 2); /* 增加两个tab */
+		strcat(temp, "/* ");
+
+		sprintf(index, "%3d", Num);
+		strcat(temp, index);
+
+		strcat(temp, " ISR_");
+
+		WideCharToMultiByte(CP_ACP, 0, p->IntName[Num], wcslen(p->IntName[Num]) + 1, Char_IntName, 256, NULL, NULL);
+
+		strcat(temp, Char_IntName);
+		strcat(temp, " */");
+		strcat(temp, "\n");
+
+		fputs(temp, F_osConfigBlock);
+	}
+	fputs("      0U		/* empty */\n}", F_osConfigBlock);
+}
 /*****************************************************************************
  *  Name        : GenInterrupt_osConfigBlock_100pin
  *  Description :
@@ -444,6 +698,54 @@ static void GenInterrupt_osConfigBlock_100pin(void)
 	fputs("   {\n", F_osConfigBlock);
 	GenInterrupt_osConfigBlock_8(p);
 	fputs("   },\n", F_osConfigBlock);
+
+	/* 设置T2 */
+	fputs(osConfigBlock_T2, F_osConfigBlock);
+
+	/* Sub-Container 12, Cat 2 ISR start addresses */
+	fputs("   /* Sub-Container 12, Cat 2 ISR start addresses */\n", F_osConfigBlock);
+	fputs("   {\n", F_osConfigBlock);
+	GenInterrupt_osConfigBlock_12(p);
+	fputs("   },\n", F_osConfigBlock);
+
+	/* Sub-Container 14, ProcessToCore */
+	fputs("   /* Sub-Container 14, ProcessToCore */\n", F_osConfigBlock);
+	fputs("   {\n", F_osConfigBlock);
+	GenInterrupt_osConfigBlock_14(p);
+	fputs("   },\n", F_osConfigBlock);
+
+	/* 设置T3 */
+	fputs(osConfigBlock_T3, F_osConfigBlock);
+
+	/* Sub-Container 27 ISR stack information */
+	fputs("   /* Sub-Container 27 ISR stack information */\n", F_osConfigBlock);
+	fputs("   {\n", F_osConfigBlock);
+	GenInterrupt_osConfigBlock_27(p);
+	fputs("   },\n", F_osConfigBlock);
+
+	/* Sub-Container 28: ISR interrupt channel index */
+	fputs("   /* Sub-Container 28: ISR interrupt channel index */\n", F_osConfigBlock);
+	fputs("   {\n", F_osConfigBlock);
+	GenInterrupt_osConfigBlock_28(p);
+	fputs("   },\n", F_osConfigBlock);
+
+	/* Sub-Container 29: ISR interrupt channel index */
+	fputs("   /* Sub-Container 29: ISR interrupt priority level */\n", F_osConfigBlock);
+	fputs("   {\n", F_osConfigBlock);
+	GenInterrupt_osConfigBlock_29(p);
+	fputs("   },\n", F_osConfigBlock);
+
+	/* Sub-Container 30: ISR to Core assignment */
+	fputs("   /* Sub-Container 30: ISR to Core assignment */\n", F_osConfigBlock);
+	fputs("   {\n", F_osConfigBlock);
+	GenInterrupt_osConfigBlock_30(p);
+	fputs("   },\n", F_osConfigBlock);
+
+	fputs("   (osuint32)0 /* uiCheckSum */\n", F_osConfigBlock);
+	fputs("};\n\n", F_osConfigBlock);
+
+	fputs("#pragma ghs section rodata=default\n", F_osConfigBlock);
+	fputs("#pragma ghs section rosdata=default\n", F_osConfigBlock);
 
 	fclose(F_osConfigBlock);
 }

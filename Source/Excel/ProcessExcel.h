@@ -62,7 +62,7 @@ typedef struct __ExcelResultInterrupt
 {
 	U8 IntConfigEnable[256];		/* 中断配置情况 */
 	U16 IntNum;						/* 配置的中断总数 */
-	U16 IntNumber;					/* 中断号 */
+	U16 IntNumber[256];					/* 中断号 */
 	wchar_t * IntName[256][100];	/* 中断源名字 */
 	wchar_t * IntFunName[256][100];	/* 中断函数名名字 */
 }_ExcelResultInterrupt;

@@ -29,11 +29,34 @@
 //#pragma comment( linker, "/subsystem:windows /entry:mainCRTStartup" )
 
 wchar_t* ccc = L"wodvfbfb";
+
+long long SignedTypeConversion(long long dat, U8 nbit)
+{
+	long long result;
+	unsigned long long sys = 1 << (nbit - 1);
+
+	printf("%d %d\n", dat,sys);
+
+	if (dat <= sys)
+	{
+		result = dat;
+		printf("haha");
+	}
+	else
+	{
+		result = (1 << nbit) - dat;
+	}
+
+	printf("%f \n",  result);
+	return result;
+}
 int main()
 {
 	S8 ret = -1;
-
+	
 	logFile = fopen("Excel.log", "w"); /* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
+
+	SignedTypeConversion(122l, 8);
 
 	ret = OpenExcel(L"Pin100.xlsx");
 	
