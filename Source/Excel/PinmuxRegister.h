@@ -24,13 +24,24 @@
 
 typedef enum
 {
+	Pin_100,
+    Pin_144
+} _PinNum;
+
+typedef enum
+{
 	P0,
+    P1,
 	P8,
 	P9,
 	P10,
 	P11,
-	AP,
-	JP
+	P12,
+	P18,
+	P20,
+	AP0,
+	AP1,
+	JP0
 } _GroupNumber;
 
 typedef enum

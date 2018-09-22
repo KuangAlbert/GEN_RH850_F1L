@@ -23,12 +23,16 @@
 #include <windows.h>
 #include "ProcessExcel.h"
 #include "log.h"
-#include "GenPinmux100pin.h"
+#include "GenPinmux_pin.h"
 
 /* 为了让生成的EXE运行时不显示黑框 */
-//#pragma comment( linker, "/subsystem:windows /entry:mainCRTStartup" )
+#pragma comment( linker, "/subsystem:windows /entry:mainCRTStartup" )
 
 wchar_t* ccc = L"wodvfbfb";
+U8 Pin_Type;
+
+
+
 
 long long SignedTypeConversion(long long dat, U8 nbit)
 {
@@ -50,24 +54,53 @@ long long SignedTypeConversion(long long dat, U8 nbit)
 	printf("%f \n",  result);
 	return result;
 }
-int main()
+int main(int argc,char *argv[])
 {
+
+    //int main(int argc,char *argv[])
 	S8 ret = -1;
-	
+    char Filename_100 = "Pin100.xlsx";
+    char Filename_144 = "Pin144.xlsx";
+        
 	logFile = fopen("Excel.log", "w"); /* 打开只写文件，若文件存在则长度清为 0，即该文件内容消失，若不存在则创建该文件 */
 
 	SignedTypeConversion(122l, 8);
 
-	ret = OpenExcel(L"Pin100.xlsx");
-	
-	if (ret == -1)
-	{
+
+    ret = OpenExcel(L"Pin144.xlsx");
+    Pin_Type = Pin_144;
+    Pinmux_Config(Pin_Type);
+    
+    if (ret == -1)
+    {
 		write_log(logFile, "打开excel表格失败!！！\n");
 		return ret;
 	}
+    
+    /*if (strcmp(argv[0],Filename_100) == 0)
+    {
+        ret = OpenExcel(L"Pin100.xlsx");
+        Pin_Type = Pin_100;
+        Pinmux_Config(Pin_Type);
+        
+    }
+
+    else if ((strcmp(argv[0],Filename_144) == 0))
+    {
+        ret = OpenExcel(L"Pin144.xlsx");
+        Pin_Type = Pin_144;
+        Pinmux_Config(Pin_Type);
+    }
+    else if (ret == -1)
+    {
+		write_log(logFile, "打开excel表格失败!！！\n");
+		return ret;
+	}
+    */
+    
 	ProcessExcelPinmux(book);
 	ProcessExcelInterrupt(book);
-	GenPinmux_100pin();
+	GenPinmux();
 	GenInterrupt_100pin();
 	CloseExcel(book);
 

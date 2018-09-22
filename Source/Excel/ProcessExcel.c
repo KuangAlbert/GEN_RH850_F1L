@@ -27,6 +27,7 @@
 #include "config.h"
 #include "log.h"
 
+
 /* pinmux 配置的寄存器的值 */
 U16 PMC[MODE_NUM][PORT_NUM];		/* port mode */
 U16 PIPC[MODE_NUM][PORT_NUM];		/* Port IP Control */
@@ -43,6 +44,12 @@ U16 PD[MODE_NUM][PORT_NUM];			/* PullDown Control */
 U16 PDSC[MODE_NUM][PORT_NUM];		/* Port Driver Strength */
 U16 PODC[MODE_NUM][PORT_NUM];		/* output mode */
 U16 P[MODE_NUM][PORT_NUM];			/* Port Value */
+
+U16 R_START_Pin;
+U16 R_END_Pin;
+U16 R_START_INT;
+U16 R_END_INT;
+
 
 /* F1L 100pin中断配置情况 */
 _ExcelResultInterrupt ExcelResultInterrupt = 
@@ -91,6 +98,33 @@ void CloseExcel(BookHandle book)
 {
 	xlBookRelease(book);
 }
+
+
+/*****************************************************************************
+ *  Name        : Pinmux_Config
+ *  Description : 宏定义程序中需要用到的参数
+ *  Parameter   :
+ *  Returns     : None
+*****************************************************************************/
+void Pinmux_Config(U8 PinType)
+{
+    
+    if (PinType == Pin_100)
+    {
+        R_START_Pin =  R(2);		/* 100pin行开始检索 */
+        R_END_Pin = R(301);		/* 100pin行检索结束 */
+        R_START_INT = R(2);		/* 100pin中断行开始检索 */
+        R_END_INT =	R(225);		/* 100pin中断行检索结束 */
+    }
+
+    else if (PinType == Pin_144)
+    {
+        R_START_Pin = R(2);		/* 144pin行开始检索 */
+        R_END_Pin = R(433);		/* 144pin行检索结束 */
+        R_START_INT = R(2);		/* 144pin中断行开始检索 */
+        R_END_INT =	R(359);		/* 144pin中断行检索结束 */
+    }
+}
 /*****************************************************************************
  *  Name        : ProcessExcelInterrupt
  *  Description :
@@ -108,11 +142,11 @@ void ProcessExcelInterrupt(BookHandle book)
 	if (sheet)
 	{
 		/* 2C -> 255C */
-		for (U16 Row = R(2); Row <= R(255); Row++)
+		for (U16 Row = R_START_INT; Row <= R_END_INT; Row++)
 		{
 			/* 中断是否配置 */
 			cell = xlSheetReadStr(sheet, Row, L('C'), 0);
-			write_log(logFile, "[%3d,C]	Interrupt Config Status: %ls\n", Row, cell);
+			write_log(logFile, "[%3d,C]	Interrupt Config Status: %ls\n", Row+1, cell);
 
 			if (NULL != cell && 0 == wcscmp(cell, L"Yes"))
 			{
@@ -156,7 +190,7 @@ void ProcessExcelInterrupt(BookHandle book)
 
 				write_log(logFile, "[%3d,A]	%d\n", Row + 1, p->IntNumber[p->IntNum]);
 
-				if (p->IntNumber[p->IntNum] > 255 )
+				if (p->IntNumber[p->IntNum] > Intrrupt_Num )
 				{
 					write_log(logFile, "[%3d,A]	error p->IntNumber错误！\n", Row + 1);
 				}
@@ -187,7 +221,7 @@ void ProcessExcelPinmux(BookHandle book)
 	_ExcelResultPinmux ExcelResultPinmux;
 	_ExcelResultPinmux* p = &ExcelResultPinmux;
 
-	/* 打开第二个sheet */
+	/* 打开第一个sheet */
 	SheetHandle sheet = xlBookGetSheet(book, 0);
 
 	if (sheet)
@@ -195,14 +229,14 @@ void ProcessExcelPinmux(BookHandle book)
 		double d = xlSheetReadNum(sheet, 3, 1, 0);
 		U16 Row;
 		
-		for (Row = R_STAET_100; Row <= R_END_100; Row++)
+		for (Row = R_START_Pin; Row <= R_END_Pin; Row++)
 		{
 			memset(p, 0xFF, sizeof(_ExcelResultPinmux));
 			
 			/* 第F列 */
 			cell = xlSheetReadStr(sheet, Row, L('F'), 0);
 			
-			write_log(logFile, "[%3d,F]	%ls\n", Row + 1, cell);
+			write_log(logFile, "[%3d,F]	%ls\n", Row+1, cell);
 			
 			if (NULL != cell && 0 == wcscmp(cell, L"Yes"))
 			{
@@ -220,21 +254,21 @@ void ProcessExcelPinmux(BookHandle book)
 				continue;
 			}
 			
-			/* 第C列 */
-			cell = xlSheetReadStr(sheet, Row, L('C'), 0);
+			/* 第C列 */		
+            cell = xlSheetReadStr(sheet, Row, L('C'), 0);
 			
 			write_log(logFile, "[%3d,C]	%ls\n", Row+1, cell);
 			
 			if (NULL != cell && 0 == wcscmp(cell, L"0"))
 			{
-				p->GroupNumber = P0;
+			    p->GroupNumber = P0;
 			}
-			else if (NULL != cell && 0 == wcscmp(cell, L"8"))
+            else if (NULL != cell && 0 == wcscmp(cell, L"8"))
 			{
 				p->GroupNumber = P8;
 			}
 			else if (NULL != cell && 0 == wcscmp(cell, L"9"))
-			{
+		    {
 				p->GroupNumber = P9;
 			}
 			else if (NULL != cell && 0 == wcscmp(cell, L"10"))
@@ -245,19 +279,43 @@ void ProcessExcelPinmux(BookHandle book)
 			{
 				p->GroupNumber = P11;
 			}
-			else if (NULL != cell && 0 == wcscmp(cell, L"20"))
+            else if (NULL != cell && 0 == wcscmp(cell, L"30"))
 			{
-				p->GroupNumber = JP;
+			    p->GroupNumber = JP0;
 			}
-			else if (NULL != cell && 0 == wcscmp(cell, L"30"))
-			{
-				p->GroupNumber = AP;
+			else if (NULL != cell && 0 == wcscmp(cell, L"40"))
+		    {
+				p->GroupNumber = AP0;
 			}
+            else if (Pin_Type == Pin_144)
+            {
+                if (NULL != cell && 0 == wcscmp(cell, L"1"))
+			    {
+				    p->GroupNumber = P1;
+			    }
+                else if (NULL != cell && 0 == wcscmp(cell, L"12"))
+			    {
+				    p->GroupNumber = P12;
+			    }
+                else if (NULL != cell && 0 == wcscmp(cell, L"18"))
+			    {
+				    p->GroupNumber = P18;
+			    }
+                else if (NULL != cell && 0 == wcscmp(cell, L"20"))
+			    {
+				    p->GroupNumber = P20;
+			    }
+                else if (NULL != cell && 0 == wcscmp(cell, L"50"))
+			    {
+				    p->GroupNumber = AP1;
+			    }
+            }
 			else if (NULL != cell && 0 != wcscmp(cell, L"NA"))
 			{
 				write_log(logFile, "[%3d,C]	error该单元格错误，也有可能是读取错误！\n", Row + 1);
 				continue;
 			}
+
 			
 			/* 第D列 */
 			p->PortNumber = xlSheetReadNum(sheet, Row, L('D'), NULL);
@@ -321,6 +379,7 @@ void ProcessExcelPinmux(BookHandle book)
 			{
 				p->RegType = PIN_IN;
 				SET_BIT(PM[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                write_log(logFile, "[%3d,I]	%d\n", Row + 1, p->RegType);
 			}
 			else if (NULL != cell && 0 == wcscmp(cell, L"OUT"))
 			{
@@ -336,66 +395,119 @@ void ProcessExcelPinmux(BookHandle book)
 			//printf("line X 0x%08x\n", PM[PORT_TYPE][GroupNumber]);
 			
 			/* 第H列 */
-			
-			cell = xlSheetReadStr(sheet, Row, L('H'), 0);
-			write_log(logFile, "[%3d,H]	%ls\n", Row + 1, cell);
-			if (NULL != cell)
-			{
-				p->AltNum = SearchAlternativNum(cell, Row, &p->AltType);
-				if (p->AltType != p->RegType && p->AltType == ALT)
-				{
-					//弹出窗口提示错误，改正
-					wchar_t p[20];
-					wchar_t q[200] = L"请检查Excel表格的第";
-					wsprintf(p, L"%d", Row+1);
-					wcscat(q,p);
-					wcscat(q,L"行，第H列的输入/输出设置是否正确！！！");
-					MessageBox(NULL, q, TEXT("温馨提示：请检查下面的设置！！！"), MB_OK | MB_ICONWARNING);
-				}
-				else
-				{
-					switch (p->AltNum)
-					{
-						case 0xFF:	/* NONE */
-							CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							break;
-						case 1:	/* 1st */
-							CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							break;
-						case 2:	/* 2nd */
-							SET_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							break;
-						case 3:	/* 3rd */
-							CLEAR_BIT(PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							SET_BIT(PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							CLEAR_BIT(PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							break;
-						case 4:	/* 4th */
-							SET_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							SET_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							break;
-						case 5:	/* 5th */
-							CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							SET_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-							break;
-						default:
-							write_log(logFile, "[%3d,H]	error功能口识别错误！\n", Row + 1);
-							break;	
-					}
-				}
-			}
-			else
-			{
-				write_log(logFile, "[%3d,H]	error出现错误！\n", Row + 1);
-			}
+            cell = xlSheetReadStr(sheet, Row, L('H'), 0);
+            write_log(logFile, "[%3d,H] %ls\n", Row + 1, cell);
+            if (NULL != cell)
+            {
+                p->AltNum = SearchAlternativNum(cell, Row, &p->AltType);
+                if (p->AltType != p->RegType && p->gpio_alt == ALT)
+                {
+                    //弹出窗口提示错误，改正
+                    wchar_t p[20];
+                    wchar_t q[200] = L"请检查Excel表格的第";
+                    wsprintf(p, L"%d", Row+1);
+                    wcscat(q,p);
+                    wcscat(q,L"行，第H列的输入/输出设置是否正确！！！");
+                    MessageBox(NULL, q, TEXT("温馨提示：请检查下面的设置！！！"), MB_OK | MB_ICONWARNING);
+                }
+                else
+                {
+                    if (Pin_Type == Pin_100)
+                    {
+                    switch (p->AltNum)
+                    {
+                        case 0xFF:  /* NONE */
+                            CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                        case 1: /* 1st */
+                            CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                       case 2: /* 2nd */
+                            SET_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                       case 3: /* 3rd */
+                            CLEAR_BIT(PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            SET_BIT(PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT(PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                       case 4: /* 4th */
+                            SET_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            SET_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                       case 5: /* 5th */
+                            CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            SET_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                      default:
+                            write_log(logFile, "[%3d,H] error功能口识别错误！\n", Row + 1);
+                            break;  
+                            }
+                    }
+                    else if (Pin_Type == Pin_144)
+                    {
+                    switch (p->AltNum)
+                    {
+                        case 0xFF:  /* NONE */
+                            CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                        case 1: /* 1st */
+                            CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                        case 2: /* 2nd */
+                            SET_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                        case 3: /* 3rd */
+                            CLEAR_BIT(PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            SET_BIT(PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT(PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                        case 4: /* 4th */
+                            SET_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            SET_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                        case 5: /* 5th */
+                            CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            SET_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                        case 6:
+                            CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            SET_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                        case 7: 
+                            CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            SET_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            break;
+                        default:
+                            write_log(logFile, "[%3d,H] error功能口识别错误！\n", Row + 1);
+                            break;  
+                            }
+                      }
+                      }
+                     }
+           else
+           {
+               write_log(logFile, "[%3d,H] error出现错误！\n", Row + 1);
+           }
+
+            
 			
 			/* 第J列 */
 			cell = xlSheetReadStr(sheet, Row, L('J'), 0);
@@ -532,7 +644,7 @@ void ProcessExcelPinmux(BookHandle book)
 				p->PortValue = ENABLE;
 				SET_BIT( P[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
 			}
-			else if (NULL != cell && 0 == wcscmp(cell, L"Low-Level"))
+			else if (NULL != cell && 0 == wcscmp(cell, L"Low_Level"))
 			{
 				p->PortValue = DISABLE;
 				CLEAR_BIT( P[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
@@ -616,7 +728,7 @@ U8 SearchAlternativNum(wchar_t* cell, U16 Row,U8* type)
 		}
 		num = atoi(tmp_num);
 	}
-	write_log(logFile, "[%3d,H]	%dst Alternative！\n",Row + 1, num);
+	write_log(logFile, "[%3d,H]	%dst Alternative\n",Row + 1, num);
 	return num;
 }
 
