@@ -19,7 +19,7 @@
 *=========================================================================*/
 #include <stdio.h>
 #include <stdarg.h>
-#include "GenInterrupt100pin.h"
+#include "GenInterruptpin.h"
 #include "ProcessExcel.h"
 #include "const.h"
 #include <windows.h>
@@ -40,6 +40,27 @@ static void GenInterrupt_osConfigBlock_12(_ExcelResultInterrupt* p);
 static void GenInterrupt_osConfigBlock_14(_ExcelResultInterrupt* p);
 static void GenInterrupt_osConfigBlock_27(_ExcelResultInterrupt* p);
 static void GenInterrupt_osConfigBlock_28(_ExcelResultInterrupt* p);
+U16 Intrrupt_NUM;/*100pin/144pin的中断总个数*/
+
+/*****************************************************************************
+ *  Name        : GetValue_IntrruptNum
+ *  Description :获取100pin/144pin的中断总个数
+ *  Parameter   :
+ *  Returns     : Intrrupt_NUM
+*****************************************************************************/
+U16 GetValue_IntrruptNum(void)
+{
+    if (Pin_Type == Pin_100)
+    {
+        Intrrupt_NUM = 224;
+    }
+    else if (Pin_Type == Pin_144)
+    {
+        Intrrupt_NUM = 358;
+    }
+
+    return(Intrrupt_NUM);
+}
 
 /*****************************************************************************
  *  Name        : GenInterrupt_100pin
@@ -49,6 +70,7 @@ static void GenInterrupt_osConfigBlock_28(_ExcelResultInterrupt* p);
 *****************************************************************************/
 void GenInterrupt_100pin(void)
 {
+    GetValue_IntrruptNum();
 	GenInterrupt_intvect_c0_100pin();
 	GenInterrupt_tcb_100pin();
 	GenInterrupt_tcbpost_100pin();
@@ -79,7 +101,7 @@ static void GenInterrupt_intvect_c0_100pin(void)
 	fputs("   .globl _osEIINTVectorTable_c0   /* start of the EIINT exception vector table */\n", F_intvect_c0);
 	fputs("_osEIINTVectorTable_c0:\n\n", F_intvect_c0);
 
-	for (U16 i = 0; i < 256; i++)
+	for (U16 i = 0; i < Intrrupt_NUM; i++)
 	{
 		if (p->IntConfigEnable[i] == 1)
 		{
