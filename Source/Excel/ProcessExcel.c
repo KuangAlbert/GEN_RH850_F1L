@@ -115,6 +115,7 @@ void Pinmux_Config(U8 PinType)
         R_END_Pin = R(301);		/* 100pin行检索结束 */
         R_START_INT = R(2);		/* 100pin中断行开始检索 */
         R_END_INT =	R(225);		/* 100pin中断行检索结束 */
+        
     }
 
     else if (PinType == Pin_144)
@@ -486,13 +487,13 @@ void ProcessExcelPinmux(BookHandle book)
                             SET_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
                             break;
                         case 6:
-                            CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            SET_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
                             CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
                             SET_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
                             break;
                         case 7: 
                             CLEAR_BIT( PFC[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
-                            CLEAR_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
+                            SET_BIT( PFCE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
                             SET_BIT( PFCAE[p->PORT_TYPE][p->GroupNumber], p->PortNumber);
                             break;
                         default:
